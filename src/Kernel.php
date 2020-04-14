@@ -2,12 +2,14 @@
 
 namespace App;
 
-use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
-use Symfony\Component\Config\Loader\LoaderInterface;
+use Predis\Client as RedisClient;
 use Symfony\Component\Config\Resource\FileResource;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\Kernel as BaseKernel;
+use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Routing\RouteCollectionBuilder;
+use Symfony\Component\HttpKernel\Kernel as BaseKernel;
+use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class Kernel extends BaseKernel
 {
@@ -41,6 +43,14 @@ class Kernel extends BaseKernel
         $loader->load($confDir.'/{packages}/'.$this->environment.'/*'.self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/{services}'.self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS, 'glob');
+    }
+
+    protected function initializeContainer()
+    {
+        parent::initializeContainer();
+        $this->container->set('redis.client', new RedisClient([
+            'host' => $this->container->getParameter('redis.host')
+        ]));
     }
 
     protected function configureRoutes(RouteCollectionBuilder $routes): void
