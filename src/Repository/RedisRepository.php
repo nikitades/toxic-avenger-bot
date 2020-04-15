@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Exception\NotEnoughMessagesInHistoryException;
+use App\Service\WordService;
 use Predis\Client as RedisClient;
 use Longman\TelegramBot\Entities\Message;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -14,14 +15,16 @@ class RedisRepository
      */
     private RedisClient $client;
     private int $historySize;
+    private WordService $wordService;
 
     /**
      * @param RedisClient<string> $redisClient ///WAT
      */
-    public function __construct(RedisClient $redisClient, ParameterBagInterface $params)
+    public function __construct(RedisClient $redisClient, ParameterBagInterface $params, WordService $wordService)
     {
         $this->client = $redisClient;
         $this->historySize = (int) $params->get("history.size");
+        $this->wordService = $wordService;
     }
 
     /**
@@ -31,24 +34,27 @@ class RedisRepository
      *      '5435342342' => 'how are you'
      *  ]
      * 
-     * @return array<string,string>
+     * @return array<string,array<string,int>>
      */
     public function getLastMessages(int $chatId): array
     {
         $chatMessagesKey = "$chatId:*";
         /** @var string[] */
         $chatKeys = $this->client->keys($chatMessagesKey);
+        if (empty($chatKeys)) return [];
         $userIds = array_map(fn ($chatKey) => explode(":", $chatKey)[1], $chatKeys);
-        $messages = $this->client->mget($chatKeys);
-        if (count($messages) < $this->historySize) {
-            throw new NotEnoughMessagesInHistoryException((string) count($messages));
+        $words = array_map(fn ($chatKey) => explode(":", $chatKey)[2], $chatKeys);
+
+        $counts = $this->client->mget($chatKeys);
+        if (array_sum($counts) < $this->historySize) {
+            throw new NotEnoughMessagesInHistoryException((string) array_sum($counts) . '/' . $this->historySize);
         }
         $output = [];
-        foreach ($messages as $i => $message) $output[$userIds[$i]] = $message;
+        foreach ($counts as $i => $count) {
+            $output[$userIds[$i]][$words[$i]] = $count;
+        }
         return $output;
     }
-
-    //TODO: переделать редис-структуру на хранение количества использований (сделать слова не строками а хешмапами)
 
     public function saveMessage(SaveMessageDTO $saveMessageDTO): void
     {
@@ -60,12 +66,18 @@ class RedisRepository
             $this->client->del($keysToRemove);
         }
 
-        $messageKey = implode(':', [
-            $saveMessageDTO->chatId,
-            $saveMessageDTO->userId,
-            $saveMessageDTO->messageTime
-        ]);
-        $this->client->set($messageKey, $saveMessageDTO->messageText);
+        $normalizedWords = $this->wordService->getProcessedMessage($saveMessageDTO->messageText);
+        foreach ($normalizedWords as $normalizedWord) {
+            $messageKey = implode(':', [
+                $saveMessageDTO->chatId,
+                $saveMessageDTO->userId,
+                $normalizedWord
+            ]);
+            $newUsagesCount = $this->client->incr($messageKey);
+            $this->setMaxResultsIfBigger($newUsagesCount, $saveMessageDTO->chatId, $saveMessageDTO->userId);
+        }
+
+
         $this->client->set("realnames:" . $saveMessageDTO->userId, $saveMessageDTO->userName);
         $this->client->incr("usages:" . $saveMessageDTO->chatId);
     }
@@ -112,5 +124,23 @@ class RedisRepository
     public function getRealName(int $userId): string
     {
         return $this->client->get("realnames:$userId") ?? (string) $userId;
+    }
+
+    public function getMaxResults(int $chatId, int $userId): int
+    {
+        return (int) $this->client->get("maxResults:$chatId:$userId");
+    }
+
+    public function setMaxResults(int $newResult, int $chatId, int $userId): void
+    {
+        $this->client->set("maxResults:$chatId:$userId", $newResult);
+    }
+
+    public function setMaxResultsIfBigger(int $newResult, int $chatId, int $userId): void
+    {
+        $oldResult = $this->getMaxResults($chatId, $userId);
+        if ($newResult > $oldResult) {
+            $this->setMaxResults($newResult, $chatId, $userId);
+        }
     }
 }

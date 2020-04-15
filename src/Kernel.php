@@ -45,6 +45,9 @@ class Kernel extends BaseKernel
         $loader->load($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS, 'glob');
     }
 
+    /**
+     * @return void
+     */
     protected function initializeContainer()
     {
         parent::initializeContainer();

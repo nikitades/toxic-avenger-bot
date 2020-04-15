@@ -8,6 +8,7 @@ use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use App\Repository\SaveMessageDTO;
 use App\Repository\RedisRepository;
+use App\Service\WordService;
 use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Commands\UserCommand;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +20,7 @@ class GenericmessageCommand extends SystemCommand
     private LoggerInterface $logger;
     private RedisRepository $redisRepo;
     private ToxicityService $toxicityService;
+    private WordService $wordService;
     private int $toxicLimit;
 
     public function __construct(Telegram $tg, Update $update)
@@ -29,6 +31,7 @@ class GenericmessageCommand extends SystemCommand
         $this->redisRepo = $kernel->getContainer()->get("redis.repo.pub");
         $this->toxicityService = $kernel->getContainer()->get("toxicity.service.pub");
         $this->toxicLimit = $kernel->getContainer()->getParameter("toxic.limit");
+        $this->wordService = $kernel->getContainer()->get("word.service.pub");
     }
 
     /** @var string */
@@ -51,6 +54,7 @@ class GenericmessageCommand extends SystemCommand
         $this->redisRepo->saveMessage($saveMessageDTO);
 
         $userToxicWords = $this->toxicityService->checkIfUserIsToxic(
+            $message->getText(),
             $message->getChat()->getId(),
             $message->getFrom()->getId()
         );
@@ -58,12 +62,17 @@ class GenericmessageCommand extends SystemCommand
             $this->logger->debug("Found a toxic user " . $message->getFrom()->getId() . " from chat " . $message->getChat()->getId());
             $data = [
                 'chat_id' => $message->getChat()->getId(),
-                'text'    => ('User ' . $message->getFrom()->getUsername() . ' is **TOXIC** for reaching the limit of **' . $this->toxicLimit . '** toxic words!')
+                'text'    => ('☣️ User @' . $message->getFrom()->getUsername() . ' is *TOXIC* for reaching the limit of *' . $this->toxicLimit . '* toxic words! ☣️'),
+                'parse_mode' => 'markdown'
             ];
             Request::sendMessage($data);
+            $escapedUserToxicWords = array_map(
+                fn ($word) => $this->wordService->escapeSwearWord($word) . ": " . $userToxicWords[$word],
+                array_keys($userToxicWords)
+            );
             $data = [
                 'chat_id' => $message->getChat()->getId(),
-                'text' => "(" . implode(", ", $userToxicWords) . ")"
+                'text' => "☣️ (" . implode(", ", $escapedUserToxicWords) . ") ☣️"
             ];
             return Request::sendMessage($data);         // Send message!
         }

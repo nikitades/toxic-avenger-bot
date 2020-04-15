@@ -7,8 +7,8 @@ parameters:
     bot.api_key: '%env(BOT_API_KEY)%'
     bot.user_name: '%env(BOT_USER_NAME)%'
     redis.host: '%env(REDIS_HOST)%'
-    history.size: 3
-    toxic.limit: 6
+    history.size: 10
+    toxic.limit: 5
 
 services:
     # default configuration for services in *this* file
@@ -29,6 +29,8 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
+    Predis\Client: '@redis.client'
+
     logger.pub: 
         alias: logger
         public: true
@@ -40,10 +42,12 @@ services:
     redis.client:
         synthetic: true
 
-    Predis\Client: '@redis.client'
-
     toxicity.service.pub:
         alias: App\Service\ToxicityService
+        public: true
+
+    word.service.pub:
+        alias: App\Service\WordService
         public: true
 
     # add more service definitions when explicit configuration is needed

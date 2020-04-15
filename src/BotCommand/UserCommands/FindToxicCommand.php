@@ -39,10 +39,9 @@ class FindToxicCommand extends UserCommand
     {
         $message = $this->getMessage();
 
-
+        $toxicUser = null;
         try {
-            /** @var array<string,string> */
-            $lastMessages = $this->redisRepo->getLastMessages($message->getChat()->getId());
+            $toxicUser = $this->toxicityService->getToxicUser($message->getChat()->getId());
         } catch (NotEnoughMessagesInHistoryException $e) {
             $data = [
                 'chat_id' => $message->getChat()->getId(),
@@ -53,7 +52,6 @@ class FindToxicCommand extends UserCommand
             return Request::sendMessage($data);
         }
 
-        $toxicUser = $this->toxicityService->getToxicUser($message->getChat()->getId(), $lastMessages);
         if (empty($toxicUser)) {
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
@@ -68,7 +66,7 @@ class FindToxicCommand extends UserCommand
 
         $data = [                                  // Set up the new message data
             'chat_id' => $message->getChat()->getId(),                 // Set Chat ID to send the message to
-            'text'    => "☣️ Current toxic  user is @$userName for abusing the word *$word* ☣️", // Set message to send
+            'text'    => "☣️ The most toxic user is @$userName for abusing the word *$word* ☣️", // Set message to send
             'parse_mode' => 'markdown'
         ];
 
