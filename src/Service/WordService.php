@@ -13,7 +13,7 @@ class WordService
     {
         $exploded = $this->split($message);
         $normalized = $this->normalizeWords($exploded);
-        return $normalized;
+        return array_unique($normalized);
     }
 
     /**

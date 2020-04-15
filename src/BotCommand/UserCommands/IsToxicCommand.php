@@ -11,12 +11,13 @@ use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Commands\UserCommand;
 use Psr\Log\LoggerInterface;
 
-class FindToxicCommand extends UserCommand
+class IsToxicCommand extends UserCommand
 {
     private LoggerInterface $logger;
     private RedisRepository $redisRepo;
     private ToxicityService $toxicityService;
     private int $historySize;
+    private int $toxicLimit;
 
     public function __construct(Telegram $tg, Update $update)
     {
@@ -26,53 +27,58 @@ class FindToxicCommand extends UserCommand
         $this->redisRepo = $kernel->getContainer()->get("redis.repo.pub");
         $this->toxicityService = $kernel->getContainer()->get("toxicity.service.pub");
         $this->historySize = $kernel->getContainer()->getParameter("history.size");
+        $this->toxicLimit = $kernel->getContainer()->getParameter("toxic.limit");
     }
 
     /** @var string */
-    protected $name = 'findtoxic';                      // Your command's name
+    protected $name = 'istoxic';                      // Your command's name
     /** @var string */
-    protected $description = 'Finds currently most toxic user'; // Your command description
+    protected $description = 'Checks is the user is toxic'; // Your command description
     /** @var string */
-    protected $usage = '/findToxic';                    // Usage of your command
+    protected $usage = '/isToxic';                    // Usage of your command
     /** @var string */
     protected $version = '1.0.0';                  // Version of your command
 
     public function execute()
     {
         $message = $this->getMessage();
+        $this->logger->debug("Is toxic command executed at chat " . $message->getChat()->getId());
 
-        try {
-            /** @var array<mixed> */
-            $toxicUser = $this->toxicityService->getMaxBadWordUsagesForChat($message->getChat()->getId());
-        } catch (NotEnoughMessagesInHistoryException $e) {
+        $username = substr($message->getText(), mb_strlen((string) $message->getFullCommand()));
+        $username = str_replace("@", "", $username);
+        $username = trim($username);
+
+        $userId = $this->redisRepo->getIdByName($username);
+        if (empty($userId)) {
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
-                'text' => '⚠️ ' . $e->getMessage() . ' ⚠️',
-                'parse_mode' => 'markdown'
-            ]);
-        }
-        if (empty($toxicUser)) {
-            return Request::sendMessage([
-                'chat_id' => $message->getChat()->getId(),
-                'text' => '❤️ No toxic users found! ❤️',
+                'text' => '🤦 User not found! 🤦',
                 'parse_mode' => 'markdown'
             ]);
         }
 
-        /** @var string */
-        $userName = $toxicUser[0];
-        /** @var int */
-        $usages = $toxicUser[1];
-        $rank = $this->toxicityService->getToxicDegree($usages);
+        $userToxicWords = $this->toxicityService->getUserBadMessages(
+            $message->getFrom()->getId(),
+            $message->getChat()->getId()
+        );
 
-        $data = [
+        $userIsToxic = false;
+        foreach ($userToxicWords as $word => $usedTimes) if ((int) $usedTimes >= $this->toxicLimit) {
+            $userIsToxic = true;
+        }
+
+        if (!$userIsToxic) {
+            return Request::sendMessage([
+                'chat_id' => $message->getChat()->getId(),
+                'text' => '😂 No, user @' . $message->getFrom()->getUsername() . ' is not toxic! 😂',
+                'parse_mode' => 'markdown'
+            ]);
+        }
+
+        return Request::sendMessage([
             'chat_id' => $message->getChat()->getId(),
-            'text' => '🤢 User @' . $userName . ' is *TOXIC* with rank *' . $rank . '* and *' . $usages . '* usages! 🤢',
+            'text' => '✔️ Yes, user @' . $message->getFrom()->getUsername() . ' is toxic! ✔️',
             'parse_mode' => 'markdown'
-        ];
-
-
-        $this->logger->debug("Get max rank command executed at chat " . $message->getChat()->getId());
-        return Request::sendMessage($data);
+        ]);
     }
 }

@@ -49,6 +49,20 @@ class HelpCommand extends UserCommand
 /addBadWord <word> - adds a bad word to this chat's list
 /removeBadWord <word> - removes this bad word from this chat's list
 /listBadWords - shows all the bad words defined for this chat
+/getRank - shows user with the most toxic words usages for this chat for all times
+/kickToxic - kicks the most toxic one from the chat
+
+This bot stores last {$this->historySize} messages from this chat (new ones erase old ones).
+When someone writes something toxic, bot makes you know.
+
+You can add your own toxic words with /addBadWord <word> command.
+
+***
+
+Этот бот хранит последние {$this->historySize} сообщений из этого чата (новые стирают старые).
+Когда кто-то пишет что-то токсичное, бот дает вам знать.
+
+Вы можете добавить свои токсичные слова командой /addBadWord <слово>.
             "
         ];
 

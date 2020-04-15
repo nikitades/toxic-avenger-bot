@@ -11,7 +11,7 @@ use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Commands\UserCommand;
 use Psr\Log\LoggerInterface;
 
-class FindToxicCommand extends UserCommand
+class GetRankCommand extends UserCommand
 {
     private LoggerInterface $logger;
     private RedisRepository $redisRepo;
@@ -29,21 +29,21 @@ class FindToxicCommand extends UserCommand
     }
 
     /** @var string */
-    protected $name = 'findtoxic';                      // Your command's name
+    protected $name = 'getrank';                      // Your command's name
     /** @var string */
-    protected $description = 'Finds currently most toxic user'; // Your command description
+    protected $description = 'Gets the max toxicity rank achieved for the chat'; // Your command description
     /** @var string */
-    protected $usage = '/findToxic';                    // Usage of your command
+    protected $usage = '/getRank';                    // Usage of your command
     /** @var string */
     protected $version = '1.0.0';                  // Version of your command
 
     public function execute()
     {
         $message = $this->getMessage();
-
+        $this->logger->debug("Get max rank command executed at chat " . $message->getChat()->getId());
+        
         try {
-            /** @var array<mixed> */
-            $toxicUser = $this->toxicityService->getMaxBadWordUsagesForChat($message->getChat()->getId());
+            $chatMaxResults = $this->redisRepo->getMaxResultsForChat($message->getChat()->getId());
         } catch (NotEnoughMessagesInHistoryException $e) {
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
@@ -51,28 +51,24 @@ class FindToxicCommand extends UserCommand
                 'parse_mode' => 'markdown'
             ]);
         }
-        if (empty($toxicUser)) {
+        if (empty($chatMaxResults)) {
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
-                'text' => '❤️ No toxic users found! ❤️',
+                'text' => '👽 No rank holders found! 👽',
                 'parse_mode' => 'markdown'
             ]);
         }
 
-        /** @var string */
-        $userName = $toxicUser[0];
-        /** @var int */
-        $usages = $toxicUser[1];
-        $rank = $this->toxicityService->getToxicDegree($usages);
+        $userId = (int) $chatMaxResults[0];
+        $usageCount = (int) $chatMaxResults[1];
 
-        $data = [
+        $realName = $this->redisRepo->getRealName($userId);
+        $rank = $this->toxicityService->getToxicDegree($usageCount);
+
+        return Request::sendMessage([
             'chat_id' => $message->getChat()->getId(),
-            'text' => '🤢 User @' . $userName . ' is *TOXIC* with rank *' . $rank . '* and *' . $usages . '* usages! 🤢',
+            'text' => '👑 Rank *' . $rank . '* belongs to @' . $realName . ' with *' . $usageCount . '* usages! 👑',
             'parse_mode' => 'markdown'
-        ];
-
-
-        $this->logger->debug("Get max rank command executed at chat " . $message->getChat()->getId());
-        return Request::sendMessage($data);
+        ]);
     }
 }

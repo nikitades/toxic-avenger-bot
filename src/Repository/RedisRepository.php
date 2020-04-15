@@ -30,8 +30,14 @@ class RedisRepository
     /**
      * Returns something like
      *  [
-     *      '3242342432' => 'hi',
-     *      '5435342342' => 'how are you'
+     *      '3242342432' => [
+     *              'hi' => 3,
+     *              'hello' => 4
+     *      ],
+     *      '5435342342' => [
+     *              'how are you' => 5,
+     *              'okay' => 6
+     *      ]
      *  ]
      * 
      * @return array<string,array<string,int>>
@@ -61,7 +67,6 @@ class RedisRepository
         $chatMessagesKey = $saveMessageDTO->chatId . ":*";
         /** @var string[] */
         $chatKeys = $this->client->keys($chatMessagesKey);
-        dump($chatKeys);
         if (count($chatKeys) > $this->historySize) {
             $keysToRemove = array_slice($chatKeys, 0, count($chatKeys) - $this->historySize + 1);
             $this->client->del($keysToRemove);
@@ -74,7 +79,7 @@ class RedisRepository
                 $saveMessageDTO->userId,
                 $normalizedWord
             ]);
-            $newUsagesCount = $this->client->incr($messageKey);
+            $this->client->incr($messageKey);
         }
 
 
@@ -124,6 +129,47 @@ class RedisRepository
     public function getRealName(int $userId): string
     {
         return $this->client->get("realnames:$userId") ?? (string) $userId;
+    }
+
+    public function getIdByName(string $username): ?int
+    {
+        $realnamesKeys = $this->client->keys("realnames:*");
+        $realnames = $this->client->mget($realnamesKeys);
+        $realanmesIds = array_map(
+            fn ($realnameKey) => explode(":", $realnameKey)[1],
+            $realnamesKeys
+        );
+        foreach ($realnames as $i => $name) {
+            if ($name === $username) {
+                return (int) $realanmesIds[$i];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param integer $chatId
+     * @return array<string>
+     */
+    public function getMaxResultsForChat(int $chatId): array
+    {
+        $maxResultsKey = "maxResults:$chatId:*";
+        $chatMaxResultsKeys = $this->client->keys($maxResultsKey);
+        $chatMaxResultsCounts = $this->client->mget($chatMaxResultsKeys);
+        $chatMaxResultsUsers = array_map(
+            fn ($keyStr) => explode(":", $keyStr)[2],
+            $chatMaxResultsKeys
+        );
+        $maxResultsUser = null;
+        $maxResultsCount = 0;
+        foreach ($chatMaxResultsCounts as $i => $count) {
+            if ($count > $maxResultsCount) {
+                $maxResultsCount = $count;
+                $maxResultsUser = $chatMaxResultsUsers[$i];
+            }
+        }
+        if ($maxResultsUser === null) return [];
+        return [$maxResultsUser, $maxResultsCount];
     }
 
     public function getMaxResults(int $chatId, int $userId): int

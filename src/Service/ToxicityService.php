@@ -20,44 +20,6 @@ class ToxicityService
     }
 
     /**
-     * Returns array like ['@samueljackson', 'bamf']
-     * 
-     * @param integer $chatId
-     * @return array<string>
-     */
-    public function getToxicUser(int $chatId): array
-    {
-        $messages = $this->redisRepo->getLastMessages($chatId);
-        if (empty($messages)) return [];
-        $badWords = $this->redisRepo->getBadWordsForChat($chatId);
-        $output = [];
-        foreach ($messages as $userId => $messages) {
-            foreach ($messages as $message => $count) {
-                if (in_array($message, $badWords)) {
-                    if (!isset($output[$userId])) $output[$userId] = [];
-                    if (!isset($output[$userId][$message])) $output[$userId][$message] = 0;
-                    $output[$userId][$message] = $count;
-                }
-            }
-        }
-        if (empty($output)) return [];
-        uasort(
-            $output,
-            function ($a, $b) {
-                $amax = max(array_values($a));
-                $bmax = max(array_values($b));
-                return $amax === $bmax ? 0
-                    : ($amax > $bmax ? 1 : -1);
-            }
-        );
-        $userIds = array_keys($output);
-        /** @var string */
-        $toxicUserId = reset($userIds);
-        $toxicUserWords = $output[$toxicUserId];
-        return [$toxicUserId, implode(", ", array_keys($toxicUserWords))];
-    }
-
-    /**
      * @param string $messageText
      * @param integer $chatId
      * @param integer $userId
@@ -108,6 +70,40 @@ class ToxicityService
         return $userBadMessages;
     }
 
+    /**
+     * @param integer $chatId
+     * @return array<mixed>
+     */
+    public function getMaxBadWordUsagesForChat(int $chatId): array
+    {
+        $chatMessages = $this->redisRepo->getLastMessages($chatId);
+        $badWords = $this->redisRepo->getBadWordsForChat($chatId);
+        foreach ($chatMessages as $userId => &$messages) {
+            foreach ($messages as $message => $usedTimes) {
+                if (!in_array($message, $badWords)) {
+                    unset($messages[$message]);
+                }
+            }
+            if (empty($messages)) unset($chatMessages[$userId]);
+        }
+        $biggestUsage = 0;
+        $mostFrequentUser = null;
+        $abusedWord = "";
+        foreach ($chatMessages as $userId => $userMessages) {
+            if (empty($userMessages)) continue;
+            foreach ($userMessages as $message => $usagesCount) {
+                if ($usagesCount > $biggestUsage) {
+                    $biggestUsage = $usagesCount;
+                    $mostFrequentUser = $userId;
+                    $abusedWord = $message;
+                }
+            }
+        }
+        if ($biggestUsage === 0) return [];
+        $realName = $this->redisRepo->getRealName((int) $mostFrequentUser);
+        return [$realName, $biggestUsage, $abusedWord];
+    }
+
     public function getToxicDegreeForUser(int $userId, int $chatId): string
     {
         $userBadWords = $this->getUserBadMessages($userId, $chatId);
@@ -119,27 +115,27 @@ class ToxicityService
     public function getToxicDegree(int $usages): string
     {
         switch (true) {
-            case $usages > 100:
+            case $usages >= 100:
                 return "🔥🔥🔥 TOXIC GOD 🔥🔥🔥";
-            case $usages > 80:
+            case $usages >= 80:
                 return "⚔️⚔️ TOXIC AVENGER ⚔️⚔️";
-            case $usages > 60:
+            case $usages >= 60:
                 return "💂💂 TOXIC SOLDIER 💂💂";
-            case $usages > 50:
+            case $usages >= 50:
                 return "👹👹 TOXIC PREDATOR 👹👹";
-            case $usages > 40:
+            case $usages >= 40:
                 return "🦠 TOXIC VIRUS 🦠";
-            case $usages > 30:
+            case $usages >= 30:
                 return "🗑️ REAL TRASH 🗑️";
-            case $usages > 20:
+            case $usages >= 20:
                 return "🏄‍♂️ MENTAL SICKNESS 🏄‍♂️";
-            case $usages > 15:
+            case $usages >= 15:
                 return "👺 TOURETTE SYNDROME 👺";
-            case $usages > 10:
+            case $usages >= 10:
                 return "🤯 HARD NEUROSIS 🤯";
-            case $usages > 7:
+            case $usages >= 7:
                 return "🤬 DIFFICULT DAY 🤬";
-            case $usages > 5:
+            case $usages >= 5:
                 return "😬 DIRTY BOY 😬";
             default:
                 return "? UNKNOWN STATUS ?";
