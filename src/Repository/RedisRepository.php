@@ -61,6 +61,7 @@ class RedisRepository
         $chatMessagesKey = $saveMessageDTO->chatId . ":*";
         /** @var string[] */
         $chatKeys = $this->client->keys($chatMessagesKey);
+        dump($chatKeys);
         if (count($chatKeys) > $this->historySize) {
             $keysToRemove = array_slice($chatKeys, 0, count($chatKeys) - $this->historySize + 1);
             $this->client->del($keysToRemove);
@@ -74,7 +75,6 @@ class RedisRepository
                 $normalizedWord
             ]);
             $newUsagesCount = $this->client->incr($messageKey);
-            $this->setMaxResultsIfBigger($newUsagesCount, $saveMessageDTO->chatId, $saveMessageDTO->userId);
         }
 
 

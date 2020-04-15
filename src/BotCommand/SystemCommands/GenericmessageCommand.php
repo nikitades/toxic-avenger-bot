@@ -60,9 +60,10 @@ class GenericmessageCommand extends SystemCommand
         );
         if (!empty($userToxicWords)) {
             $this->logger->debug("Found a toxic user " . $message->getFrom()->getId() . " from chat " . $message->getChat()->getId());
+            $userStatus = $this->toxicityService->getToxicDegreeForUser($message->getFrom()->getId(), $message->getChat()->getId());
             $data = [
                 'chat_id' => $message->getChat()->getId(),
-                'text'    => ('☣️ User @' . $message->getFrom()->getUsername() . ' is *TOXIC* for reaching the limit of *' . $this->toxicLimit . '* toxic words! ☣️'),
+                'text'    => ('☣️ User @' . $message->getFrom()->getUsername() . ' is *' . $userStatus . '* for reaching the limit of *' . $this->toxicLimit . '* toxic words! ☣️'),
                 'parse_mode' => 'markdown'
             ];
             Request::sendMessage($data);

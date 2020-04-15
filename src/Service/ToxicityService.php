@@ -73,6 +73,7 @@ class ToxicityService
         if (empty($intersectedBadWords)) return [];
 
         foreach ($intersectedBadWords as $intersectedBadWord) {
+            $this->redisRepo->setMaxResultsIfBigger($userBadMessages[$intersectedBadWord], $chatId, $userId);
             if ($userBadMessages[$intersectedBadWord] >= $this->toxicLimit) {
                 return $userBadMessages;
             }
@@ -107,25 +108,33 @@ class ToxicityService
         return $userBadMessages;
     }
 
+    public function getToxicDegreeForUser(int $userId, int $chatId): string
+    {
+        $userBadWords = $this->getUserBadMessages($userId, $chatId);
+        $justWords = array_values($userBadWords);
+        $mostFrequentWordCount = reset($justWords);
+        return $this->getToxicDegree((int) $mostFrequentWordCount);
+    }
+
     public function getToxicDegree(int $usages): string
     {
         switch (true) {
             case $usages > 100:
-                return "😇 TOXIC GOD 😇";
+                return "🔥🔥🔥 TOXIC GOD 🔥🔥🔥";
             case $usages > 80:
-                return "⚔️ TOXIC AVENGER ⚔️";
+                return "⚔️⚔️ TOXIC AVENGER ⚔️⚔️";
             case $usages > 60:
-                return "💂 TOXIC SOLDIER 💂";
+                return "💂💂 TOXIC SOLDIER 💂💂";
             case $usages > 50:
-                return "👹 TOXIC PREDATOR 👹";
+                return "👹👹 TOXIC PREDATOR 👹👹";
             case $usages > 40:
                 return "🦠 TOXIC VIRUS 🦠";
             case $usages > 30:
                 return "🗑️ REAL TRASH 🗑️";
             case $usages > 20:
-                return "🏄‍♂️ GARBAGE SURFER 🏄‍♂️";
+                return "🏄‍♂️ MENTAL SICKNESS 🏄‍♂️";
             case $usages > 15:
-                return "🌋 TOURETTE SYNDROME 🌋";
+                return "👺 TOURETTE SYNDROME 👺";
             case $usages > 10:
                 return "🤯 HARD NEUROSIS 🤯";
             case $usages > 7:
