@@ -134,6 +134,7 @@ class RedisRepository
     public function getIdByName(string $username): ?int
     {
         $realnamesKeys = $this->client->keys("realnames:*");
+        if (empty($realnamesKeys)) return null;
         $realnames = $this->client->mget($realnamesKeys);
         $realanmesIds = array_map(
             fn ($realnameKey) => explode(":", $realnameKey)[1],
@@ -155,6 +156,7 @@ class RedisRepository
     {
         $maxResultsKey = "maxResults:$chatId:*";
         $chatMaxResultsKeys = $this->client->keys($maxResultsKey);
+        if (empty($chatMaxResultsKeys)) return [];
         $chatMaxResultsCounts = $this->client->mget($chatMaxResultsKeys);
         $chatMaxResultsUsers = array_map(
             fn ($keyStr) => explode(":", $keyStr)[2],

@@ -17,6 +17,7 @@ class GetRankCommand extends UserCommand
     private RedisRepository $redisRepo;
     private ToxicityService $toxicityService;
     private int $historySize;
+    private int $toxicLimit;
 
     public function __construct(Telegram $tg, Update $update)
     {
@@ -25,6 +26,7 @@ class GetRankCommand extends UserCommand
         $this->logger = $kernel->getContainer()->get("logger.pub");
         $this->redisRepo = $kernel->getContainer()->get("redis.repo.pub");
         $this->toxicityService = $kernel->getContainer()->get("toxicity.service.pub");
+        $this->toxicLimit = $kernel->getContainer()->getParameter("toxic.limit");
         $this->historySize = $kernel->getContainer()->getParameter("history.size");
     }
 
@@ -41,7 +43,7 @@ class GetRankCommand extends UserCommand
     {
         $message = $this->getMessage();
         $this->logger->debug("Get max rank command executed at chat " . $message->getChat()->getId());
-        
+
         try {
             $chatMaxResults = $this->redisRepo->getMaxResultsForChat($message->getChat()->getId());
         } catch (NotEnoughMessagesInHistoryException $e) {
@@ -59,8 +61,24 @@ class GetRankCommand extends UserCommand
             ]);
         }
 
+        if (empty($chatMaxResults)) {
+            return Request::sendMessage([
+                'chat_id' => $message->getChat()->getId(),
+                'text' => '👽 No rank holders found! 👽',
+                'parse_mode' => 'markdown'
+            ]);
+        }
+
         $userId = (int) $chatMaxResults[0];
         $usageCount = (int) $chatMaxResults[1];
+
+        if ($usageCount < $this->toxicLimit) {
+            return Request::sendMessage([
+                'chat_id' => $message->getChat()->getId(),
+                'text' => '👽 No rank holders found! 👽',
+                'parse_mode' => 'markdown'
+            ]);
+        }
 
         $realName = $this->redisRepo->getRealName($userId);
         $rank = $this->toxicityService->getToxicDegree($usageCount);

@@ -16,6 +16,8 @@ services:
       - redis
     depends_on:
       - redis
+    volumes:
+      - ./var:/var/www/html/var
   redis:
     image: redis:5.0.8
     expose:

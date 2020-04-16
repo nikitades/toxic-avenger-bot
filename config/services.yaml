@@ -7,7 +7,7 @@ parameters:
     bot.api_key: '%env(BOT_API_KEY)%'
     bot.user_name: '%env(BOT_USER_NAME)%'
     redis.host: '%env(REDIS_HOST)%'
-    history.size: 10
+    history.size: 100
     toxic.limit: 5
 
 services:

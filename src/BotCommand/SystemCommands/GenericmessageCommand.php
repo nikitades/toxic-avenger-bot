@@ -45,7 +45,7 @@ class GenericmessageCommand extends SystemCommand
     {
         $message = $this->getMessage();
 
-        if ($message->getChat()->getType() !== "group") {
+        if ($message->getChat()->getType() === "private") {
             $data = [
                 'chat_id' => $message->getChat()->getId(),
                 'text'    => "😞 Sorry, this bot is for *chat* usage only 😞",
@@ -53,6 +53,8 @@ class GenericmessageCommand extends SystemCommand
             ];
             return Request::sendMessage($data);
         }
+
+        if (empty(trim($message->getText()))) return new ServerResponse(['ok' => true], "MrNagoorBaba");;
 
         $saveMessageDTO = new SaveMessageDTO();
         $saveMessageDTO->userName = $message->getFrom()->getUsername();

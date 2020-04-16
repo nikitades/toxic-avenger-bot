@@ -17,6 +17,7 @@ class FindToxicCommand extends UserCommand
     private RedisRepository $redisRepo;
     private ToxicityService $toxicityService;
     private int $historySize;
+    private int $toxicLimit;
 
     public function __construct(Telegram $tg, Update $update)
     {
@@ -26,6 +27,7 @@ class FindToxicCommand extends UserCommand
         $this->redisRepo = $kernel->getContainer()->get("redis.repo.pub");
         $this->toxicityService = $kernel->getContainer()->get("toxicity.service.pub");
         $this->historySize = $kernel->getContainer()->getParameter("history.size");
+        $this->toxicLimit = $kernel->getContainer()->getParameter("toxic.limit");
     }
 
     /** @var string */
@@ -63,6 +65,15 @@ class FindToxicCommand extends UserCommand
         $userName = $toxicUser[0];
         /** @var int */
         $usages = $toxicUser[1];
+
+        if ($usages < $this->toxicLimit) {
+            return Request::sendMessage([
+                'chat_id' => $message->getChat()->getId(),
+                'text' => '❤️ No toxic users found! ❤️',
+                'parse_mode' => 'markdown'
+            ]);
+        }
+
         $rank = $this->toxicityService->getToxicDegree($usages);
 
         $data = [
