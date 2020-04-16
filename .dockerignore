@@ -1,0 +1,8 @@
+bin
+deploy
+var
+.dockerignore
+.env
+.env.local
+.gitignore
+.git

@@ -60,4 +60,9 @@ class WordService
         }
         return $swearWord;
     }
+
+    public function getPredefinedBadWords(): array
+    {
+        
+    }
 }

@@ -11,12 +11,19 @@ class ToxicityService
     private RedisRepository $redisRepo;
     private int $toxicLimit;
     private WordService $wordService;
+    private PredefinedBadWordsService $predefinedBadWordsService;
 
-    public function __construct(RedisRepository $redisRepository, ParameterBagInterface $params, WordService $wordService)
+    public function __construct(
+        RedisRepository $redisRepository, 
+        ParameterBagInterface $params, 
+        WordService $wordService,
+        PredefinedBadWordsService $predefinedBadWordsService
+        )
     {
         $this->redisRepo = $redisRepository;
         $this->toxicLimit = $params->get("toxic.limit");
         $this->wordService = $wordService;
+        $this->predefinedBadWordsService = $predefinedBadWordsService;
     }
 
     /**
@@ -51,6 +58,11 @@ class ToxicityService
     public function getUserBadMessages(int $userId, int $chatId): array
     {
         $badWords = $this->redisRepo->getBadWordsForChat($chatId);
+        $predefinedBadWords = array_merge(
+            $this->predefinedBadWordsService->getRu(),
+            $this->predefinedBadWordsService->getEn()
+        );
+        $badWords = array_merge($badWords, $predefinedBadWords);
         /** @var array<string,array<string,int>> */
         $messages = [];
         try {
@@ -78,6 +90,11 @@ class ToxicityService
     {
         $chatMessages = $this->redisRepo->getLastMessages($chatId);
         $badWords = $this->redisRepo->getBadWordsForChat($chatId);
+        $predefinedBadWords = array_merge(
+            $this->predefinedBadWordsService->getRu(),
+            $this->predefinedBadWordsService->getEn()
+        );
+        $badWords = array_merge($badWords, $predefinedBadWords);
         foreach ($chatMessages as $userId => &$messages) {
             foreach ($messages as $message => $usedTimes) {
                 if (!in_array($message, $badWords)) {
@@ -115,25 +132,25 @@ class ToxicityService
     public function getToxicDegree(int $usages): string
     {
         switch (true) {
-            case $usages >= 100:
+            case $usages >= 350:
                 return "🔥🔥🔥 TOXIC GOD 🔥🔥🔥";
-            case $usages >= 80:
+            case $usages >= 300:
                 return "⚔️⚔️ TOXIC AVENGER ⚔️⚔️";
-            case $usages >= 60:
+            case $usages >= 250:
                 return "💂💂 TOXIC SOLDIER 💂💂";
-            case $usages >= 50:
+            case $usages >= 200:
                 return "👹👹 TOXIC PREDATOR 👹👹";
-            case $usages >= 40:
+            case $usages >= 150:
                 return "🦠 TOXIC VIRUS 🦠";
-            case $usages >= 30:
+            case $usages >= 100:
                 return "🗑️ REAL TRASH 🗑️";
-            case $usages >= 20:
+            case $usages >= 75:
                 return "🏄‍♂️ MENTAL SICKNESS 🏄‍♂️";
-            case $usages >= 15:
+            case $usages >= 50:
                 return "👺 TOURETTE SYNDROME 👺";
-            case $usages >= 10:
+            case $usages >= 25:
                 return "🤯 HARD NEUROSIS 🤯";
-            case $usages >= 7:
+            case $usages >= 10:
                 return "🤬 DIFFICULT DAY 🤬";
             case $usages >= 5:
                 return "😬 DIRTY BOY 😬";

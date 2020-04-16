@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+  nginx:
+    image: nikitades/toxic-avenger-bot-nginx:latest
+    ports:
+      - "8085:80"
+    depends_on:
+      - fpm
+    links:
+      - fpm
+  fpm:
+    image: nikitades/toxic-avenger-bot-php-fpm:latest
+    expose:
+      - "9000"
+    links:
+      - redis
+    depends_on:
+      - redis
+  redis:
+    image: redis:5.0.8
+    expose:
+      - "6379"
+    volumes: 
+      - ./redis-db:/data
