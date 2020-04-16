@@ -46,6 +46,7 @@ class HelpCommand extends UserCommand
 /start - begin using this bot
 /help - show this message
 /findToxic - find a toxic user from last {$this->historySize} messages
+/isToxic <username> - check if this user is toxic
 /addBadWord <word> - adds a bad word to this chat's list
 /removeBadWord <word> - removes this bad word from this chat's list
 /listBadWords - shows all the bad words defined for this chat

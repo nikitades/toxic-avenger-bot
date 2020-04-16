@@ -70,14 +70,14 @@ class IsToxicCommand extends UserCommand
         if (!$userIsToxic) {
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
-                'text' => '😂 No, user @' . $message->getFrom()->getUsername() . ' is not toxic! 😂',
+                'text' => '😂 No, user @' . $username . ' is not toxic! 😂',
                 'parse_mode' => 'markdown'
             ]);
         }
 
         return Request::sendMessage([
             'chat_id' => $message->getChat()->getId(),
-            'text' => '✔️ Yes, user @' . $message->getFrom()->getUsername() . ' is toxic! ✔️',
+            'text' => '✔️ Yes, user @' . $username . ' is toxic! ✔️',
             'parse_mode' => 'markdown'
         ]);
     }
