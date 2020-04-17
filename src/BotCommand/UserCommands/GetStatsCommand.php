@@ -5,17 +5,19 @@ namespace Longman\TelegramBot\Commands\UserCommands;
 use App\Exception\NotEnoughMessagesInHistoryException;
 use App\Repository\RedisRepository;
 use App\Service\ToxicityService;
+use App\Service\WordService;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Commands\UserCommand;
 use Psr\Log\LoggerInterface;
 
-class IsToxicCommand extends UserCommand
+class GetStatsCommand extends UserCommand
 {
     private LoggerInterface $logger;
     private RedisRepository $redisRepo;
     private ToxicityService $toxicityService;
+    private WordService $wordService;
     private int $historySize;
     private int $toxicLimit;
 
@@ -26,29 +28,31 @@ class IsToxicCommand extends UserCommand
         $this->logger = $kernel->getContainer()->get("logger.pub");
         $this->redisRepo = $kernel->getContainer()->get("redis.repo.pub");
         $this->toxicityService = $kernel->getContainer()->get("toxicity.service.pub");
-        $this->historySize = $kernel->getContainer()->getParameter("history.size");
+        $this->wordService = $kernel->getContainer()->get("word.service.pub");
         $this->toxicLimit = $kernel->getContainer()->getParameter("toxic.limit");
+        $this->historySize = $kernel->getContainer()->getParameter("history.size");
     }
 
     /** @var string */
-    protected $name = 'istoxic';                      // Your command's name
+    protected $name = 'getstats';                      // Your command's name
     /** @var string */
-    protected $description = 'Checks is the user is toxic'; // Your command description
+    protected $description = 'Gets the statistics of the given user'; // Your command description
     /** @var string */
-    protected $usage = '/isToxic';                    // Usage of your command
+    protected $usage = '/getStats <user>';                    // Usage of your command
     /** @var string */
     protected $version = '1.0.0';                  // Version of your command
 
     public function execute()
     {
         $message = $this->getMessage();
-        $this->logger->debug("Is toxic command executed at chat " . $message->getChat()->getId());
+
+        $this->logger->debug("Get stat command executed at chat " . $message->getChat()->getId());
 
         $username = substr($message->getText(), mb_strlen((string) $message->getFullCommand()));
         $username = str_replace("@", "", $username);
         $username = trim($username);
 
-        $userId = $this->redisRepo->getIdByName($username);
+        $userId = (int) $this->redisRepo->getIdByName($username);
         if (empty($userId)) {
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
@@ -57,33 +61,27 @@ class IsToxicCommand extends UserCommand
             ]);
         }
 
-        $userToxicWords = $this->toxicityService->getUserBadMessages(
-            $userId,
-            $message->getChat()->getId()
-        );
+        $chatId = $message->getChat()->getId();
 
-        $userIsToxic = false;
-        $usedTimes = 0;
-        $word = "";
+        $userLastBadMessages = $this->toxicityService->getUserBadMessages($userId, $chatId);
+        $userLastBadMessages = array_slice($userLastBadMessages, 0, 10);
+        $userAllTimeBadMessages = $this->redisRepo->getMaxResults($chatId, $userId);
+        $userAllTimeBadMessages = array_slice($userAllTimeBadMessages, 0, 10);
 
-        foreach ($userToxicWords as $thisWord => $thisUsedTimes) if ((int) $thisUsedTimes >= $this->toxicLimit && $thisUsedTimes > $usedTimes) {
-            $userIsToxic = true;
-            $usedTimes = $thisUsedTimes;
-            $word = $thisWord;
-        }
+        $recentWords = [];
+        foreach ($userLastBadMessages as $word => $count) $recentWords[] = $this->wordService->escapeSwearWord($word) . " ($count)";
 
-        if (!$userIsToxic) {
-            return Request::sendMessage([
-                'chat_id' => $message->getChat()->getId(),
-                'text' => '😂 No, user @' . $username . ' is not toxic! 😂',
-                'parse_mode' => 'markdown'
-            ]);
-        }
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'text' => 'User @' . $username . ' used recently: ' . implode(", ", $recentWords),
+        ]);
+
+        $allTimeWords = [];
+        foreach ($userAllTimeBadMessages as $word => $count) $allTimeWords[] = $this->wordService->escapeSwearWord($word) . " ($count)";
 
         return Request::sendMessage([
-            'chat_id' => $message->getChat()->getId(),
-            'text' => '✔️ Yes, user @' . $username . ' is toxic for *' . $word . '* (' . $usedTimes . ')! ✔️',
-            'parse_mode' => 'markdown'
+            'chat_id' => $chatId,
+            'text' => 'User @' . $username . '\'s best records: ' . implode(", ", $allTimeWords),
         ]);
     }
 }

@@ -35,15 +35,17 @@ class ToxicityService
     public function checkIfUserIsToxic(string $messageText, int $chatId, int $userId): array
     {
         $thisMessageWords = $this->wordService->getProcessedMessage($messageText);
+        $thisWholeMessageNormalized = $this->wordService->normalizeWord($messageText);
+        $summaryBadWords = array_unique([...$thisMessageWords, $thisWholeMessageNormalized]);
 
         $userBadMessages = $this->getUserBadMessages($userId, $chatId);
 
-        $intersectedBadWords = array_intersect($thisMessageWords, array_keys($userBadMessages));
+        $intersectedBadWords = array_intersect($summaryBadWords, array_keys($userBadMessages));
         if (empty($intersectedBadWords)) return [];
 
         foreach ($intersectedBadWords as $intersectedBadWord) {
-            $this->redisRepo->setMaxResultsIfBigger($userBadMessages[$intersectedBadWord], $chatId, $userId);
-            if ($userBadMessages[$intersectedBadWord] >= $this->toxicLimit) {
+            $this->redisRepo->setMaxResultsIfBigger($intersectedBadWord, $userBadMessages[$intersectedBadWord], $chatId, $userId);
+            if ($userBadMessages[$intersectedBadWord] >= $this->toxicLimit) { //main line. Toxic limit is the key
                 return $userBadMessages;
             }
         }
@@ -152,7 +154,7 @@ class ToxicityService
                 return "🤯 HARD NEUROSIS 🤯";
             case $usages >= 10:
                 return "🤬 DIFFICULT DAY 🤬";
-            case $usages >= 5:
+            case $usages >= $this->toxicLimit:
                 return "😬 DIRTY BOY 😬";
             default:
                 return "? UNKNOWN STATUS ?";

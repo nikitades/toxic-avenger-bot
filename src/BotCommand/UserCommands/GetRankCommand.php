@@ -53,13 +53,6 @@ class GetRankCommand extends UserCommand
                 'parse_mode' => 'markdown'
             ]);
         }
-        if (empty($chatMaxResults)) {
-            return Request::sendMessage([
-                'chat_id' => $message->getChat()->getId(),
-                'text' => '👽 No rank holders found! 👽',
-                'parse_mode' => 'markdown'
-            ]);
-        }
 
         if (empty($chatMaxResults)) {
             return Request::sendMessage([
@@ -71,6 +64,7 @@ class GetRankCommand extends UserCommand
 
         $userId = (int) $chatMaxResults[0];
         $usageCount = (int) $chatMaxResults[1];
+        $abusedWord = (string) $chatMaxResults[2];
 
         if ($usageCount < $this->toxicLimit) {
             return Request::sendMessage([
@@ -85,7 +79,7 @@ class GetRankCommand extends UserCommand
 
         return Request::sendMessage([
             'chat_id' => $message->getChat()->getId(),
-            'text' => '👑 Rank *' . $rank . '* belongs to @' . $realName . ' with *' . $usageCount . '* usages! 👑',
+            'text' => '👑 Rank *' . $rank . '* belongs to @' . $realName . ' with *' . $abusedWord . '* (' . $usageCount . ' usages) 👑',
             'parse_mode' => 'markdown'
         ]);
     }

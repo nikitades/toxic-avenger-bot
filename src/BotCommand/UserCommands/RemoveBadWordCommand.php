@@ -4,6 +4,7 @@ namespace Longman\TelegramBot\Commands\UserCommands;
 
 use App\Repository\RedisRepository;
 use App\Service\ToxicityService;
+use App\Service\WordService;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\Entities\Update;
@@ -15,6 +16,7 @@ class RemoveBadWordCommand extends UserCommand
     private LoggerInterface $logger;
     private RedisRepository $redisRepo;
     private ToxicityService $toxicityService;
+    private WordService $wordService;
 
     public function __construct(Telegram $tg, Update $update)
     {
@@ -23,6 +25,7 @@ class RemoveBadWordCommand extends UserCommand
         $this->logger = $kernel->getContainer()->get("logger.pub");
         $this->redisRepo = $kernel->getContainer()->get("redis.repo.pub");
         $this->toxicityService = $kernel->getContainer()->get("toxicity.service.pub");
+        $this->wordService = $kernel->getContainer()->get("word.service.pub");
     }
 
     /** @var string */
@@ -38,17 +41,24 @@ class RemoveBadWordCommand extends UserCommand
     {
         $message = $this->getMessage();
         $word = trim(substr($message->getText(), strlen((string) $message->getFullCommand())));
-
-        $this->redisRepo->addBadWordForChat((string) $word, $message->getChat()->getId());
-        $this->redisRepo->removeBadWordForChat((string) $word, $message->getChat()->getId());
-
-        $data = [
-            'chat_id' => $message->getChat()->getId(),
-            'text'    => "Word *$word* successfully removed!",
-            'parse_mode' => 'markdown'
-        ];
+        $escapedWord = $this->wordService->normalizeWord($word);
 
         $this->logger->debug("Remove bad word command executed at chat " . $message->getChat()->getId());
-        return Request::sendMessage($data);
+
+        if (!$this->redisRepo->checkIfBadWordIsInChat($escapedWord, $message->getChat()->getId())) {
+            return Request::sendMessage([
+                'chat_id' => $message->getChat()->getId(),
+                'text' => "Word *$escapedWord* was not found among bad words!",
+                'parse_mode' => 'markdown'
+            ]);
+        }
+
+        $this->redisRepo->removeBadWordForChat((string) $escapedWord, $message->getChat()->getId());
+
+        return Request::sendMessage([
+            'chat_id' => $message->getChat()->getId(),
+            'text'    => "Word *$escapedWord* successfully removed!",
+            'parse_mode' => 'markdown'
+        ]);
     }
 }

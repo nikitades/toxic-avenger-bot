@@ -13,6 +13,7 @@ use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Commands\UserCommand;
 use Symfony\Component\HttpFoundation\Response;
 use Longman\TelegramBot\Commands\SystemCommand;
+use Longman\TelegramBot\Entities\Message;
 use Longman\TelegramBot\Entities\ServerResponse;
 
 class GenericmessageCommand extends SystemCommand
@@ -56,28 +57,18 @@ class GenericmessageCommand extends SystemCommand
 
         if (empty(trim($message->getText()))) return new ServerResponse(['ok' => true], "MrNagoorBaba");;
 
-        $saveMessageDTO = new SaveMessageDTO();
-        $saveMessageDTO->userName = $message->getFrom()->getUsername();
-        $saveMessageDTO->userId = $message->getFrom()->getId();
-        $saveMessageDTO->messageText = $message->getText();
-        $saveMessageDTO->messageTime = $message->getDate();
-        $saveMessageDTO->chatId = $message->getChat()->getId();
-        $this->redisRepo->saveMessage($saveMessageDTO);
+        $this->saveMessage($message);
 
-        $userToxicWords = $this->toxicityService->checkIfUserIsToxic(
-            $message->getText(),
-            $message->getChat()->getId(),
-            $message->getFrom()->getId()
-        );
+        $userToxicWords = $this->getUserToxicWords($message);
+
         if (!empty($userToxicWords)) {
             $this->logger->debug("Found a toxic user " . $message->getFrom()->getId() . " from chat " . $message->getChat()->getId());
             $userStatus = $this->toxicityService->getToxicDegreeForUser($message->getFrom()->getId(), $message->getChat()->getId());
-            $data = [
+            Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
                 'text'    => ('☣️ User @' . $message->getFrom()->getUsername() . ' is *' . $userStatus . '* for reaching the limit of *' . $this->toxicLimit . '* toxic words! ☣️'),
                 'parse_mode' => 'markdown'
-            ];
-            Request::sendMessage($data);
+            ]);
             $escapedUserToxicWords = array_map(
                 fn ($word) => $this->wordService->escapeSwearWord($word) . ": " . $userToxicWords[$word],
                 array_keys($userToxicWords)
@@ -90,5 +81,29 @@ class GenericmessageCommand extends SystemCommand
         }
 
         return new ServerResponse(['ok' => true], "MrNagoorBaba");
+    }
+
+    /**
+     * @param Message $message
+     * @return array<string,int>
+     */
+    private function getUserToxicWords(Message $message): array
+    {
+        return $this->toxicityService->checkIfUserIsToxic(
+            $message->getText(),
+            $message->getChat()->getId(),
+            $message->getFrom()->getId()
+        );
+    }
+
+    private function saveMessage(Message $message): void
+    {
+        $saveMessageDTO = new SaveMessageDTO();
+        $saveMessageDTO->userName = $message->getFrom()->getUsername();
+        $saveMessageDTO->userId = $message->getFrom()->getId();
+        $saveMessageDTO->messageText = $message->getText();
+        $saveMessageDTO->messageTime = $message->getDate();
+        $saveMessageDTO->chatId = $message->getChat()->getId();
+        $this->redisRepo->saveMessage($saveMessageDTO);
     }
 }

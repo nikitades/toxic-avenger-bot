@@ -61,8 +61,10 @@ class WordService
         return $swearWord;
     }
 
-    public function getPredefinedBadWords(): array
+    public function checkIfWordIsOk(string $word): bool
     {
-        
+        if (empty($word)) return false;
+        if (mb_strlen($word) <= 3) return false;
+        return true;
     }
 }

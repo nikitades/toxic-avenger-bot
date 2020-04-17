@@ -52,9 +52,6 @@ class RedisRepository
         $words = array_map(fn ($chatKey) => explode(":", $chatKey)[2], $chatKeys);
 
         $counts = $this->client->mget($chatKeys);
-        if (array_sum($counts) < $this->historySize) {
-            throw new NotEnoughMessagesInHistoryException((string) array_sum($counts) . '/' . $this->historySize);
-        }
         $output = [];
         foreach ($counts as $i => $count) {
             $output[$userIds[$i]][$words[$i]] = $count;
@@ -73,7 +70,8 @@ class RedisRepository
         }
 
         $normalizedWords = $this->wordService->getProcessedMessage($saveMessageDTO->messageText);
-        foreach ($normalizedWords as $normalizedWord) {
+        $normalizedWholeMessage = $this->wordService->normalizeWord($saveMessageDTO->messageText);
+        foreach ([...$normalizedWords, $normalizedWholeMessage] as $normalizedWord) {
             $messageKey = implode(':', [
                 $saveMessageDTO->chatId,
                 $saveMessageDTO->userId,
@@ -100,6 +98,12 @@ class RedisRepository
     {
         $badWordsKey = "badwords:$chatId";
         return $this->client->smembers($badWordsKey);
+    }
+
+    public function checkIfBadWordIsInChat(string $badWord, int $chatId): bool
+    {
+        $badWordsForChat = $this->getBadWordsForChat($chatId);
+        return in_array($badWord, $badWordsForChat);
     }
 
     /**
@@ -150,7 +154,7 @@ class RedisRepository
 
     /**
      * @param integer $chatId
-     * @return array<string>
+     * @return array<mixed>
      */
     public function getMaxResultsForChat(int $chatId): array
     {
@@ -158,37 +162,89 @@ class RedisRepository
         $chatMaxResultsKeys = $this->client->keys($maxResultsKey);
         if (empty($chatMaxResultsKeys)) return [];
         $chatMaxResultsCounts = $this->client->mget($chatMaxResultsKeys);
+
+        //TODO: тут инт?
+        /** @var array<int> */
         $chatMaxResultsUsers = array_map(
             fn ($keyStr) => explode(":", $keyStr)[2],
             $chatMaxResultsKeys
         );
+
+        /** @var array<string> */
+        $chatMaxResultsWords = array_map(
+            fn ($keyStr) => explode(":", $keyStr)[3],
+            $chatMaxResultsKeys
+        );
+
         $maxResultsUser = null;
         $maxResultsCount = 0;
+        $maxResultsWord = "";
         foreach ($chatMaxResultsCounts as $i => $count) {
             if ($count > $maxResultsCount) {
-                $maxResultsCount = $count;
-                $maxResultsUser = $chatMaxResultsUsers[$i];
+                $maxResultsCount = (int) $count;
+                $maxResultsWord = (string) $chatMaxResultsWords[$i];
+                $maxResultsUser = (string) $chatMaxResultsUsers[$i];
             }
         }
         if ($maxResultsUser === null) return [];
-        return [$maxResultsUser, $maxResultsCount];
+        return [$maxResultsUser, $maxResultsCount, $maxResultsWord];
     }
 
-    public function getMaxResults(int $chatId, int $userId): int
+    /**
+     * @param integer $chatId
+     * @param integer $userId
+     * @return array<mixed>
+     */
+    public function getMaxResult(int $chatId, int $userId): array
     {
-        return (int) $this->client->get("maxResults:$chatId:$userId");
+        $userMaxResults = $this->getMaxResults($chatId, $userId);
+        $maxResults = 0;
+        $word = "";
+        foreach ($userMaxResults as $thisWord => $count) {
+            if ($count > $maxResults) {
+                $maxResults = $count;
+                $word = $thisWord;
+            }
+        }
+        if ($maxResults === 0) return [];
+        return [$word, $maxResults];
     }
 
-    public function setMaxResults(int $newResult, int $chatId, int $userId): void
+    /**
+     * @param integer $chatId
+     * @param integer $userId
+     * @return array<string,int>
+     */
+    public function getMaxResults(int $chatId, int $userId): array
     {
-        $this->client->set("maxResults:$chatId:$userId", $newResult);
+        $userMaxResultsKeys = $this->client->keys("maxResults:$chatId:$userId:*");
+        if (empty($userMaxResultsKeys)) return [];
+        $userMaxResultsCounts = $this->client->mget($userMaxResultsKeys);
+        $userMaxresultsWords = array_map(fn ($strKey) => explode(":", $strKey)[3], $userMaxResultsKeys);
+        $output = [];
+        foreach ($userMaxresultsWords as $i => $word) {
+            $output[$word] = $userMaxResultsCounts[$i];
+        }
+        arsort($output);
+        return $output;
     }
 
-    public function setMaxResultsIfBigger(int $newResult, int $chatId, int $userId): void
+    public function getMaxResultsForWord(string $word, int $chatId, int $userId): int
     {
-        $oldResult = $this->getMaxResults($chatId, $userId);
-        if ($newResult > $oldResult) {
-            $this->setMaxResults($newResult, $chatId, $userId);
+        return (int) $this->client->get("maxResults:$chatId:$userId:$word");
+    }
+
+    public function setMaxResults(string $word, int $newResult, int $chatId, int $userId): void
+    {
+        $this->client->set("maxResults:$chatId:$userId:$word", $newResult);
+    }
+
+    public function setMaxResultsIfBigger(string $word, int $newResult, int $chatId, int $userId): void
+    {
+        $currentWordResults = $this->getMaxResultsForWord($word, $chatId, $userId);
+
+        if ($newResult > $currentWordResults) {
+            $this->setMaxResults($word, $newResult, $chatId, $userId);
         }
     }
 }
