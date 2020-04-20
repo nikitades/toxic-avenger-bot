@@ -55,7 +55,7 @@ class GetStatsCommand extends UserCommand
         if (empty($username)) {
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
-                'text' => "Please, provide the user name (" . $this->usage . ' @<username>)',
+                'text' => "Please, provide the user name (" . $this->usage . ')',
                 'parse_mode' => 'markdown'
             ]);
         }

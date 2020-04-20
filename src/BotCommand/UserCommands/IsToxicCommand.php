@@ -35,7 +35,7 @@ class IsToxicCommand extends UserCommand
     /** @var string */
     protected $description = 'Checks is the user is toxic'; // Your command description
     /** @var string */
-    protected $usage = '/isToxic';                    // Usage of your command
+    protected $usage = '/isToxic <user>';                    // Usage of your command
     /** @var string */
     protected $version = '1.0.0';                  // Version of your command
 
@@ -51,7 +51,7 @@ class IsToxicCommand extends UserCommand
         if (empty($username)) {
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
-                'text' => "Please, provide the user name (" . $this->usage . ' @<username>)',
+                'text' => "Please, provide the user name (" . $this->usage . ')',
                 'parse_mode' => 'markdown'
             ]);
         }

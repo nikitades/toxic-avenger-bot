@@ -33,7 +33,7 @@ class AddBadWordCommand extends UserCommand
     /** @var string */
     protected $description = 'Adds a bad word to the chat'; // Your command description
     /** @var string */
-    protected $usage = '/addBadWord';                    // Usage of your command
+    protected $usage = '/addBadWord <word>';                    // Usage of your command
     /** @var string */
     protected $version = '1.0.0';                  // Version of your command
 
@@ -46,7 +46,7 @@ class AddBadWordCommand extends UserCommand
         if (empty($escapedWord)) {
             return Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
-                'text' => "Please, provide the word (" . $this->usage . ' <word>)',
+                'text' => "Please, provide the word (" . $this->usage . ')',
                 'parse_mode' => 'markdown'
             ]);
         }
