@@ -48,6 +48,14 @@ class IsToxicCommand extends UserCommand
         $username = str_replace("@", "", $username);
         $username = trim($username);
 
+        if (empty($username)) {
+            return Request::sendMessage([
+                'chat_id' => $message->getChat()->getId(),
+                'text' => "Please, provide the user name (" . $this->usage . ' @<username>)',
+                'parse_mode' => 'markdown'
+            ]);
+        }
+
         $userId = $this->redisRepo->getIdByName($username);
         if (empty($userId)) {
             return Request::sendMessage([

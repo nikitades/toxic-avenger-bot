@@ -43,6 +43,14 @@ class RemoveBadWordCommand extends UserCommand
         $word = trim(substr($message->getText(), strlen((string) $message->getFullCommand())));
         $escapedWord = $this->wordService->normalizeWord($word);
 
+        if (empty($escapedWord)) {
+            return Request::sendMessage([
+                'chat_id' => $message->getChat()->getId(),
+                'text' => "Please, provide the word (" . $this->usage . ' <word>)',
+                'parse_mode' => 'markdown'
+            ]);
+        }
+
         $this->logger->debug("Remove bad word command executed at chat " . $message->getChat()->getId());
 
         if (!$this->redisRepo->checkIfBadWordIsInChat($escapedWord, $message->getChat()->getId())) {
