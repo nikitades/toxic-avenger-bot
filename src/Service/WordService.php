@@ -39,7 +39,7 @@ class WordService
 
     public function normalizeWord(string $word): string
     {
-        $word = mb_ereg_replace("[^A-Za-zА-Яа-я\-\']", " ", $word);
+        $word = mb_ereg_replace("[^A-Za-zА-Яа-я\-\'\)]", " ", $word);
         $word = mb_ereg_replace("\W{2,}", " ", (string) $word);
         $word = trim((string) $word);
         return mb_strtolower($word);
