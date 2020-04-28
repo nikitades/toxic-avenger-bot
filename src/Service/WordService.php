@@ -2,8 +2,16 @@
 
 namespace App\Service;
 
+use App\Service\AllowedSpecialBadWordsService;
+
 class WordService
 {
+    private AllowedSpecialBadWordsService $asbws;
+
+    public function __construct(AllowedSpecialBadWordsService $asbws)
+    {
+        $this->asbws = $asbws;
+    }
 
     /**
      * @param string $message
@@ -39,7 +47,9 @@ class WordService
 
     public function normalizeWord(string $word): string
     {
-        if ($word === "))") return $word;
+        if (in_array($word, $this->asbws->getAll())) {
+            return $word;
+        }
         $word = mb_ereg_replace("[^A-Za-zА-Яа-я\-\'\)]", " ", $word);
         $word = mb_ereg_replace("\W{2,}", " ", (string) $word);
         $word = trim((string) $word);
@@ -64,7 +74,9 @@ class WordService
 
     public function checkIfWordIsOk(string $word): bool
     {
-        if ($word === "))") return true;
+        if (in_array($word, $this->asbws->getAll())) {
+            return true;
+        }
         if (empty($word)) return false;
         if (mb_strlen($word) < 3) return false;
         return true;

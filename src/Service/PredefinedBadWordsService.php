@@ -259,4 +259,15 @@ class PredefinedBadWordsService
     {
         return [];
     }
+
+    /**
+     * @return array<string>
+     */
+    public function getAll(): array
+    {
+        return [
+            ...$this->getRu(),
+            ...$this->getEn()
+        ];
+    }
 }

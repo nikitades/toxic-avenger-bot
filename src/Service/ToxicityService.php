@@ -14,12 +14,11 @@ class ToxicityService
     private PredefinedBadWordsService $predefinedBadWordsService;
 
     public function __construct(
-        RedisRepository $redisRepository, 
-        ParameterBagInterface $params, 
+        RedisRepository $redisRepository,
+        ParameterBagInterface $params,
         WordService $wordService,
         PredefinedBadWordsService $predefinedBadWordsService
-        )
-    {
+    ) {
         $this->redisRepo = $redisRepository;
         $this->toxicLimit = $params->get("toxic.limit");
         $this->wordService = $wordService;
@@ -60,10 +59,7 @@ class ToxicityService
     public function getUserBadMessages(int $userId, int $chatId): array
     {
         $badWords = $this->redisRepo->getBadWordsForChat($chatId);
-        $predefinedBadWords = array_merge(
-            $this->predefinedBadWordsService->getRu(),
-            $this->predefinedBadWordsService->getEn()
-        );
+        $predefinedBadWords = $this->predefinedBadWordsService->getAll();
         $badWords = array_merge($badWords, $predefinedBadWords);
         /** @var array<string,array<string,int>> */
         $messages = [];
@@ -92,10 +88,7 @@ class ToxicityService
     {
         $chatMessages = $this->redisRepo->getLastMessages($chatId);
         $badWords = $this->redisRepo->getBadWordsForChat($chatId);
-        $predefinedBadWords = array_merge(
-            $this->predefinedBadWordsService->getRu(),
-            $this->predefinedBadWordsService->getEn()
-        );
+        $predefinedBadWords = $this->predefinedBadWordsService->getAll();
         $badWords = array_merge($badWords, $predefinedBadWords);
         foreach ($chatMessages as $userId => &$messages) {
             foreach ($messages as $message => $usedTimes) {
