@@ -64,7 +64,7 @@ class WordService
 
     public function checkIfWordIsOk(string $word): bool
     {
-        if ($word === "))");
+        if ($word === "))") return true;
         if (empty($word)) return false;
         if (mb_strlen($word) < 3) return false;
         return true;
