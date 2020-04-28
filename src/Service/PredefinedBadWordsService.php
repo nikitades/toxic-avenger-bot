@@ -10,8 +10,6 @@ class PredefinedBadWordsService
     public function getRu(): array
     {
         return [
-            ")",
-            "))",
             "пизду",
             "мать",
             "сука",
