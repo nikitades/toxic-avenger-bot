@@ -4,7 +4,7 @@ namespace App\Service;
 
 class WordService
 {
-    
+
     /**
      * @param string $message
      * @return array<string>
@@ -39,6 +39,7 @@ class WordService
 
     public function normalizeWord(string $word): string
     {
+        if ($word === "))") return $word;
         $word = mb_ereg_replace("[^A-Za-zА-Яа-я\-\'\)]", " ", $word);
         $word = mb_ereg_replace("\W{2,}", " ", (string) $word);
         $word = trim((string) $word);
@@ -63,6 +64,7 @@ class WordService
 
     public function checkIfWordIsOk(string $word): bool
     {
+        if ($word === "))");
         if (empty($word)) return false;
         if (mb_strlen($word) < 3) return false;
         return true;
