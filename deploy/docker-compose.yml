@@ -10,8 +10,6 @@ services:
       - fpm
   fpm:
     image: nikitades/toxic-avenger-bot-php-fpm:latest
-    expose:
-      - "9000"
     links:
       - redis
     depends_on:
@@ -20,7 +18,5 @@ services:
       - ./var:/var/www/html/var
   redis:
     image: redis:5.0.8
-    expose:
-      - "6379"
     volumes: 
       - ./redis-db:/data
