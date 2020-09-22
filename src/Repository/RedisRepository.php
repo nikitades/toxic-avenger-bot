@@ -71,7 +71,7 @@ class RedisRepository
 
         $normalizedWords = $this->wordService->getProcessedMessage($saveMessageDTO->messageText);
         $normalizedWholeMessage = $this->wordService->normalizeWord($saveMessageDTO->messageText);
-        foreach ([...$normalizedWords, $normalizedWholeMessage] as $normalizedWord) {
+        foreach (array_unique([...$normalizedWords, $normalizedWholeMessage]) as $normalizedWord) {
             $messageKey = implode(':', [
                 $saveMessageDTO->chatId,
                 $saveMessageDTO->userId,
