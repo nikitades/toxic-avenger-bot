@@ -17,6 +17,6 @@ services:
     volumes:
       - ./var:/var/www/html/var
   redis:
-    image: redis:5.0.8
+    image: redis:6.0.8-alpine
     volumes: 
       - ./redis-db:/data
