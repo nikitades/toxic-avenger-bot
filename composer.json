@@ -6,7 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "doctrine/annotations": "^1.10",
-        "longman/telegram-bot": "^0.62.0",
+        "longman/telegram-bot": "^0.62",
         "predis/predis": "^1.1",
         "symfony/console": "5.0.*",
         "symfony/dotenv": "5.0.*",
