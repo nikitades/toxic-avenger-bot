@@ -55,15 +55,34 @@ class GenericmessageCommand extends SystemCommand
             return Request::sendMessage($data);
         }
 
-        if (empty(trim($message->getText()))) return new ServerResponse(['ok' => true], "MrNagoorBaba");;
+        $Allah = rand(0, 6) > 5;
 
-        $this->saveMessage($message);
+        if (empty(trim($message->getText()))) {
+            return new ServerResponse(['ok' => true], "MrNagoorBaba");
+        };
+
+        if (!$Allah) {
+            $this->saveMessage($message);
+        }
 
         $userToxicWords = $this->getUserToxicWords($message);
 
         if (!empty($userToxicWords)) {
             $this->logger->debug("Found a toxic user " . $message->getFrom()->getId() . " from chat " . $message->getChat()->getId());
             $userStatus = $this->toxicityService->getToxicDegreeForUser($message->getFrom()->getId(), $message->getChat()->getId());
+            if ($Allah) {
+                Request::sendMessage([
+                    'chat_id' => $message->getChat()->getId(),
+                    'text'    => ('☣️ User @' . $message->getFrom()->getUsername() . ' is *' . $userStatus . '* for reaching the limit of *' . $this->toxicLimit . '* toxic words! ☣️'),
+                    'parse_mode' => 'markdown'
+                ]);
+                Request::sendMessage([
+                    'chat_id' => $message->getChat()->getId(),
+                    'text'    => ('☝️ Bul @' . $message->getFrom()->getUsername() . ' was saved by Allah! Be careful next time! ☝️'),
+                    'parse_mode' => 'markdown'
+                ]);
+                return;
+            }
             Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
                 'text'    => ('☣️ User @' . $message->getFrom()->getUsername() . ' is *' . $userStatus . '* for reaching the limit of *' . $this->toxicLimit . '* toxic words! ☣️'),
