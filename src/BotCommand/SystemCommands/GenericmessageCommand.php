@@ -10,8 +10,6 @@ use App\Repository\SaveMessageDTO;
 use App\Repository\RedisRepository;
 use App\Service\WordService;
 use Longman\TelegramBot\Entities\Update;
-use Longman\TelegramBot\Commands\UserCommand;
-use Symfony\Component\HttpFoundation\Response;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Entities\Message;
 use Longman\TelegramBot\Entities\ServerResponse;
@@ -28,11 +26,11 @@ class GenericmessageCommand extends SystemCommand
     {
         parent::__construct($tg, $update);
         global $kernel;
-        $this->logger = $kernel->getContainer()->get("logger.pub");
-        $this->redisRepo = $kernel->getContainer()->get("redis.repo.pub");
-        $this->toxicityService = $kernel->getContainer()->get("toxicity.service.pub");
-        $this->toxicLimit = $kernel->getContainer()->getParameter("toxic.limit");
-        $this->wordService = $kernel->getContainer()->get("word.service.pub");
+        $this->logger = $kernel->getContainer()->get('logger.pub');
+        $this->redisRepo = $kernel->getContainer()->get('redis.repo.pub');
+        $this->toxicityService = $kernel->getContainer()->get('toxicity.service.pub');
+        $this->toxicLimit = $kernel->getContainer()->getParameter('toxic.limit');
+        $this->wordService = $kernel->getContainer()->get('word.service.pub');
     }
 
     /** @var string */
@@ -46,20 +44,21 @@ class GenericmessageCommand extends SystemCommand
     {
         $message = $this->getMessage();
 
-        if ($message->getChat()->getType() === "private") {
+        if ('private' === $message->getChat()->getType()) {
             $data = [
                 'chat_id' => $message->getChat()->getId(),
-                'text'    => "😞 Sorry, this bot is for *chat* usage only 😞",
-                'parse_mode' => 'markdown'
+                'text' => '😞 Sorry, this bot is for *chat* usage only 😞',
+                'parse_mode' => 'markdown',
             ];
+
             return Request::sendMessage($data);
         }
 
         $Allah = rand(0, 6) > 5;
 
         if (empty(trim($message->getText()))) {
-            return new ServerResponse(['ok' => true], "MrNagoorBaba");
-        };
+            return new ServerResponse(['ok' => true], 'MrNagoorBaba');
+        }
 
         if (!$Allah) {
             $this->saveMessage($message);
@@ -68,38 +67,47 @@ class GenericmessageCommand extends SystemCommand
         $userToxicWords = $this->getUserToxicWords($message);
 
         if (!empty($userToxicWords)) {
-            $this->logger->debug("Found a toxic user " . $message->getFrom()->getId() . " from chat " . $message->getChat()->getId());
+            $this->logger->debug('Found a toxic user ' . $message->getFrom()->getId() . ' from chat ' . $message->getChat()->getId());
             $userStatus = $this->toxicityService->getToxicDegreeForUser($message->getFrom()->getId(), $message->getChat()->getId());
             if ($Allah) {
                 Request::sendMessage([
                     'chat_id' => $message->getChat()->getId(),
-                    'text'    => ('☣️ User @' . $message->getFrom()->getUsername() . ' is *' . $userStatus . '* for reaching the limit of *' . $this->toxicLimit . '* toxic words! ☣️'),
-                    'parse_mode' => 'markdown'
+                    'text' => ('☣️ User @' . $message->getFrom()->getUsername() . ' is *' . $userStatus . '* for reaching the limit of *' . $this->toxicLimit . '* toxic words! ☣️'),
+                    'parse_mode' => 'markdown',
                 ]);
                 Request::sendMessage([
                     'chat_id' => $message->getChat()->getId(),
-                    'text'    => ('☝️ Bul @' . $message->getFrom()->getUsername() . ' was saved by Allah! Be careful next time! ☝️'),
-                    'parse_mode' => 'markdown'
+                    'text' => ('☝️ But @' . $message->getFrom()->getUsername() . ' was saved by Allah! Be careful next time! ☝️'),
+                    'parse_mode' => 'markdown',
                 ]);
+
                 return;
             }
             Request::sendMessage([
                 'chat_id' => $message->getChat()->getId(),
-                'text'    => ('☣️ User @' . $message->getFrom()->getUsername() . ' is *' . $userStatus . '* for reaching the limit of *' . $this->toxicLimit . '* toxic words! ☣️'),
-                'parse_mode' => 'markdown'
+                'text' => ('☣️ User @' . $message->getFrom()->getUsername() . ' is *' . $userStatus . '* for reaching the limit of *' . $this->toxicLimit . '* toxic words! ☣️'),
+                'parse_mode' => 'markdown',
             ]);
             $escapedUserToxicWords = array_map(
-                fn ($word) => $this->wordService->escapeSwearWord($word) . ": " . $userToxicWords[$word],
+                fn ($word) => $this->wordService->escapeSwearWord($word) . ': ' . $userToxicWords[$word],
                 array_keys($userToxicWords)
             );
             $data = [
                 'chat_id' => $message->getChat()->getId(),
-                'text' => "☣️ (" . implode(", ", $escapedUserToxicWords) . ") ☣️"
+                'text' => '☣️ (' . implode(', ', $escapedUserToxicWords) . ') ☣️',
             ];
-            return Request::sendMessage($data);         // Send message!
+
+            Request::sendMessage($data);         // Send message!
+
+            Request::sendSticker([
+                'chat_id' => $message->getChat()->getId(),
+                'sticker' => 'AQADn2Bmpy4AA3YAAw',
+            ]);
+
+            return;
         }
 
-        return new ServerResponse(['ok' => true], "MrNagoorBaba");
+        return new ServerResponse(['ok' => true], 'MrNagoorBaba');
     }
 
     /**
