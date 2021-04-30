@@ -102,6 +102,7 @@ class GenericmessageCommand extends SystemCommand
             Request::sendSticker([
                 'chat_id' => $message->getChat()->getId(),
                 'sticker' => 'AQADn2Bmpy4AA3YAAw',
+                'reply_to_message_id' => $message->getMessageId(),
             ]);
 
             return;
