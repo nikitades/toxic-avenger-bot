@@ -99,9 +99,9 @@ class GenericmessageCommand extends SystemCommand
 
             Request::sendMessage($data);         // Send message!
 
-            Request::sendMessage([
+            Request::sendSticker([
                 'chat_id' => $message->getChat()->getId(),
-                'text' => 'zhopa',
+                'sticker' => 'CAACAgIAAxkBAAIJdWCMD_mrlUsfMs48rWeBLSvDevHmAALWDQACcrgxSPzDKEoNLeHkHwQ',
                 'reply_to_message_id' => $message->getMessageId(),
             ]);
 
