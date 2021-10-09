@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Nikitades\ToxicAvenger\Controller;
+namespace Nikitades\ToxicAvenger\App\Controller;
 
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class TestController
 {
