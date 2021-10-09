@@ -2,53 +2,24 @@
 # Files in the packages/ subdirectory configure your dependencies.
 
 # Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    bot.api_key: '%env(BOT_API_KEY)%'
-    bot.user_name: '%env(BOT_USER_NAME)%'
-    redis.host: '%env(REDIS_HOST)%'
-    history.size: 1000
-    toxic.limit: 3
 
 services:
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-    
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
-    App\:
-        resource: '../src/*'
-        exclude: '../src/{DependencyInjection,BotCommand,Entity,Migrations,Tests,Kernel.php}'
-
-    # controllers are imported separately to make sure services can be injected
-    # as action arguments even if you don't extend any base controller class
-    App\Controller\:
-        resource: '../src/Controller'
-        tags: ['controller.service_arguments']
-
-    Predis\Client: '@redis.client'
-
-    logger.pub: 
-        alias: logger
-        public: true
-
-    redis.repo.pub:
-        alias: App\Repository\RedisRepository
-        public: true
-
-    redis.client:
-        synthetic: true
-
-    toxicity.service.pub:
-        alias: App\Service\ToxicityService
-        public: true
-
-    word.service.pub:
-        alias: App\Service\WordService
-        public: true
+    Nikitades\ToxicAvenger\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
