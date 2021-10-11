@@ -25,7 +25,7 @@ class LemmatizingAnalysis
 
     public function __construct(
         private string $lex,
-        private int $wt,
+        private float $wt,
         private string $gr
     ) {
     }
@@ -35,7 +35,7 @@ class LemmatizingAnalysis
         return $this->lex;
     }
 
-    public function getWeight(): int
+    public function getWeight(): float
     {
         return $this->wt;
     }
@@ -76,7 +76,7 @@ class LemmatizingAnalysis
             throw new LogicException('No grammar info found!');
         }
 
-        return array_shift($grammarInfo);
+        return explode('=', $grammarInfo[0])[0];
     }
 
     public static function checkIfMeaningful(self $that): bool

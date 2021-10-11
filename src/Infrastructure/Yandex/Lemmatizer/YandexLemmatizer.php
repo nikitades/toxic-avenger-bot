@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace Nikitades\ToxicAvenger\Infrastructure\Yandex\Lemmatizer;
 
 use LogicException;
-use Nikitades\ToxicAvenger\Domain\LemmatizerInterface;
+use Nikitades\ToxicAvenger\Infrastructure\Lemmatizer\LanguageBoundLemmatizerInterface;
 
-class YandexLemmatizer implements LemmatizerInterface
+class YandexLemmatizer implements LanguageBoundLemmatizerInterface
 {
     public function __construct(
-        private LemmatizerSystemAwareFactory $lemmatizerFactory,
+        private LemmatizerProcess $lemmatizerFactory,
     ) {
+    }
+
+    public function getLanguage(): string
+    {
+        return 'ru';
     }
 
     /**
@@ -20,16 +25,21 @@ class YandexLemmatizer implements LemmatizerInterface
      */
     public function lemmatizePhraseWithOnlyMeaningful(string $phrase): array
     {
-        $allPhrases = $this->lemmatizerFactory->getInstance()->lemmatizePhraseWithWeight($phrase);
+        $allPhrases = $this->lemmatizerFactory->lemmatizePhraseWithWeight($phrase);
 
         $nonLemmatizablePhrases = array_filter(
             $allPhrases,
             fn (LemmatizingResult $result): bool => null === $result->getFirstResultOrNull(),
         );
 
-        $lemmatizablePhrases = array_diff(
-            $allPhrases,
+        $lowercasedNonLemmatizablePhrases = array_map(
+            fn (LemmatizingResult $result): LemmatizingResult => new LemmatizingResult([], mb_strtolower($result->getText())),
             $nonLemmatizablePhrases
+        );
+
+        $lemmatizablePhrases = array_filter(
+            $allPhrases,
+            fn (LemmatizingResult $result): bool => null !== $result->getFirstResultOrNull(),
         );
 
         $meaningfulData = array_filter(
@@ -39,7 +49,7 @@ class YandexLemmatizer implements LemmatizerInterface
 
         return array_map(
             fn (LemmatizingResult $result): string => $result->getFirstResultOrFallback(),
-            array_merge($nonLemmatizablePhrases, $meaningfulData),
+            array_merge($lowercasedNonLemmatizablePhrases, $meaningfulData),
         );
     }
 }

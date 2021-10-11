@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Nikitades\ToxicAvenger\Infrastructure\Yandex\Lemmatizer;
 
-use JMS\Serializer\Annotation\Type;
-
 class LemmatizingResult
 {
+    /** @var array<LemmatizingAnalysis> */
+    private array $analysis;
+
     /**
      * @param array<LemmatizingAnalysis> $analysis
      */
     public function __construct(
-        #[Type('array<' . LemmatizingAnalysis::class . '>')]
-        private array $analysis,
-
+        array $analysis,
         private string $text,
     ) {
+        $this->analysis = $analysis;
     }
 
     public function isEmpty(): bool
@@ -26,11 +26,16 @@ class LemmatizingResult
 
     public function getFirstResultOrNull(): LemmatizingAnalysis | null
     {
-        return array_shift($this->analysis);
+        return $this->analysis[0] ?? null;
     }
 
     public function getFirstResultOrFallback(): string
     {
         return array_shift($this->analysis)?->getLex() ?? $this->text;
+    }
+
+    public function getText(): string
+    {
+        return $this->text;
     }
 }

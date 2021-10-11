@@ -11,6 +11,10 @@ services:
         autowire: true # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
+    _instanceof:
+        Nikitades\ToxicAvenger\Infrastructure\Lemmatizer\LanguageBoundLemmatizerInterface:
+            tags: ["lemmatizer.language_bound"]
+
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     Nikitades\ToxicAvenger\:
@@ -24,6 +28,26 @@ services:
         resource: "../src/App/Controller/"
         tags: ["controller.service_arguments"]
         public: true
+
+    Nikitades\ToxicAvenger\Domain\LemmatizerInterface:
+        class: Nikitades\ToxicAvenger\Infrastructure\Lemmatizer\MultilingualLemmatizer
+        arguments:
+            - !tagged_iterator lemmatizer.language_bound
+
+    LanguageDetection\Language:
+        arguments:
+            - ["ru", "en"]
+
+    php_doc_extractor:
+        class: Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor
+
+    reflection_extractor:
+        class: Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor
+            
+    property_info_extractor:
+        class: Symfony\Component\PropertyInfo\PropertyInfoExtractor
+        bind:
+            $typeExtractors: ['@php_doc_extractor', '@reflection_extractor']
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
