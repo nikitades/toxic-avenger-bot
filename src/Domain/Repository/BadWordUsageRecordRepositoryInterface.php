@@ -8,5 +8,8 @@ use Nikitades\ToxicAvenger\Domain\Entity\BadWordUsageRecord;
 
 interface BadWordUsageRecordRepositoryInterface
 {
-    public function save(BadWordUsageRecord $record): void;
+    /**
+     * @param array<BadWordUsageRecord> $badWordUsages
+     */
+    public function addBadWordUsages(array $badWordUsages): void;
 }

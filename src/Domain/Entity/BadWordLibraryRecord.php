@@ -9,15 +9,15 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\UniqueConstraint;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 #[Entity]
 #[UniqueConstraint(fields: ['telegramChatId', 'text'])]
 class BadWordLibraryRecord
 {
     public function __construct(
-        #[Id, Column(type: 'text', length: 36)]
-        public Uuid $id,
+        #[Id, Column(type: 'uuid', length: 36)]
+        public UuidInterface $id,
 
         #[Column(type: 'integer')]
         public int $telegramChatId,

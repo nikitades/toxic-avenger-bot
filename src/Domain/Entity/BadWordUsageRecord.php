@@ -10,15 +10,15 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\UniqueConstraint;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 #[Entity]
 #[UniqueConstraint(columns: ['user_id', 'telegram_chat_id', 'library_word_id'])]
 class BadWordUsageRecord
 {
     public function __construct(
-        #[Id, Column(type: 'text', length: 36)]
-        public Uuid $id,
+        #[Id, Column(type: 'uuid', length: 36)]
+        public UuidInterface $id,
 
         #[ManyToOne(targetEntity: User::class)]
         public User $user,
@@ -29,11 +29,11 @@ class BadWordUsageRecord
         #[Column(type: 'integer')]
         public int $telegramChatId,
 
-        #[Column(type: 'text', length: 36)]
-        public Uuid $libraryWordId,
+        #[Column(type: 'uuid', length: 36)]
+        public UuidInterface $libraryWordId,
 
         #[Column(type: 'datetime')]
-        public DateTimeInterface $addedAt,
+        public DateTimeInterface $sentAt,
     ) {
     }
 }

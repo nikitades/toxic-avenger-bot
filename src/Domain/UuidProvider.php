@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nikitades\ToxicAvenger\App;
+namespace Nikitades\ToxicAvenger\Domain;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;

@@ -4,27 +4,53 @@ declare(strict_types=1);
 
 namespace Nikitades\ToxicAvenger\Domain\Command\NewMessage;
 
+use Nikitades\ToxicAvenger\Domain\UuidProvider;
+use Nikitades\ToxicAvenger\Domain\Entity\BadWordLibraryRecord;
+use Nikitades\ToxicAvenger\Domain\Entity\BadWordUsageRecord;
 use Nikitades\ToxicAvenger\Domain\Repository\BadWordUsageRecordRepositoryInterface;
 use Nikitades\ToxicAvenger\Domain\LemmatizerInterface;
+use Nikitades\ToxicAvenger\Domain\Repository\BadWordLibraryRecordRepositoryInterface;
+use Nikitades\ToxicAvenger\Domain\Repository\UserRepositoryInterface;
+use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-class NewMessageCommandHandler
+class NewMessageCommandHandler implements MessageHandlerInterface
 {
     public function __construct(
         private LemmatizerInterface $lemmatizer,
-        private BadWordUsageRecordRepositoryInterface $badWordUsageRecordRepository
+        private UserRepositoryInterface $userRepository,
+        private BadWordLibraryRecordRepositoryInterface $badWordLibraryRecordRepository,
+        private BadWordUsageRecordRepositoryInterface $badWordUsageRecordRepository,
+        private UuidProvider $uuidProvider,
     ) {
     }
 
     public function __invoke(NewMessageCommand $command): void
     {
+        $user = $this->userRepository->findByTelegramId($command->userId);
+
+        if (null === $user) {
+            return;
+        }
+
         $lemmas = $this->lemmatizer->lemmatizePhraseWithOnlyMeaningful($command->text);
 
-        /**
-         * 1. принять сообщение
-         * 2. через лемматайзер получить анализ введенных слов
-         * 3. выкинуть предлоги и частицы (https://yandex.ru/dev/mystem/doc/grammemes-values.html)
-         * 4. добавить +1 использование каждой леммы пользователю.
-         */
-        $a = 1;
+        $badWordsFromLibrary = $this->badWordLibraryRecordRepository->findManyWithinChat(
+            chatId: $command->chatId,
+            possibleBadWords: $lemmas
+        );
+
+        $badWordUsages = array_map(
+            fn (BadWordLibraryRecord $badWordLibraryRecord): BadWordUsageRecord => new BadWordUsageRecord(
+                id: $this->uuidProvider->provide(),
+                user: $user,
+                telegramMessageId: $command->messageId,
+                telegramChatId: $command->chatId,
+                libraryWordId: $badWordLibraryRecord->id,
+                sentAt: $command->sentAt
+            ),
+            $badWordsFromLibrary
+        );
+
+        $this->badWordUsageRecordRepository->addBadWordUsages($badWordUsages);
     }
 }

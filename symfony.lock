@@ -88,11 +88,23 @@
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.5"
     },
+    "guzzlehttp/guzzle": {
+        "version": "7.3.0"
+    },
+    "guzzlehttp/promises": {
+        "version": "1.5.0"
+    },
+    "guzzlehttp/psr7": {
+        "version": "2.1.0"
+    },
     "jetbrains/phpstorm-attributes": {
         "version": "1.0"
     },
     "laminas/laminas-code": {
         "version": "4.4.3"
+    },
+    "longman/telegram-bot": {
+        "version": "0.74.0"
     },
     "myclabs/deep-copy": {
         "version": "1.10.2"
@@ -162,8 +174,20 @@
     "psr/event-dispatcher": {
         "version": "1.0.0"
     },
+    "psr/http-client": {
+        "version": "1.0.1"
+    },
+    "psr/http-factory": {
+        "version": "1.0.1"
+    },
+    "psr/http-message": {
+        "version": "1.0.1"
+    },
     "psr/log": {
         "version": "2.0.0"
+    },
+    "ralouphie/getallheaders": {
+        "version": "3.0.3"
     },
     "ramsey/collection": {
         "version": "1.2.1"

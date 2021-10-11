@@ -34,6 +34,14 @@ services:
         arguments:
             - !tagged_iterator lemmatizer.language_bound
 
+    Nikitades\ToxicAvenger\App\BusAwareTelegram:
+        bind:
+            $api_key: "%env(BOT_TOKEN)%"
+            $bot_username: "%env(BOT_USERNAME)%"
+        calls:
+            - addCommandsPaths:
+                  - - "%kernel.project_dir%/src/App/Telegram/Command"
+
     LanguageDetection\Language:
         arguments:
             - ["ru", "en"]
@@ -43,11 +51,11 @@ services:
 
     reflection_extractor:
         class: Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor
-            
+
     property_info_extractor:
         class: Symfony\Component\PropertyInfo\PropertyInfoExtractor
         bind:
-            $typeExtractors: ['@php_doc_extractor', '@reflection_extractor']
+            $typeExtractors: ["@php_doc_extractor", "@reflection_extractor"]
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

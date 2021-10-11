@@ -13,8 +13,10 @@ final class NewMessageCommand
     public function __construct(
         public string $text,
         public int $userId,
+        public string $userName,
         public int $chatId,
-        public DateTimeInterface $sentAt
+        public int $messageId,
+        public DateTimeInterface $sentAt,
     ) {
     }
 }

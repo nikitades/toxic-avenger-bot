@@ -12,6 +12,7 @@
         "doctrine/doctrine-bundle": "^2.4",
         "doctrine/doctrine-migrations-bundle": "^3.1",
         "doctrine/orm": "^2.10",
+        "longman/telegram-bot": "^0.74.0",
         "patrickschur/language-detection": "^5.1",
         "ramsey/uuid": "^4.2",
         "symfony/console": "5.3.*",
