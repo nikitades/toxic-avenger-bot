@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\UniqueConstraint;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 #[
     Entity,
@@ -20,11 +20,11 @@ use Ramsey\Uuid\Uuid;
 class User
 {
     /**
-     * @param Collection<BadWordUsageRecord> $badWords
+     * @param Collection<int,BadWordUsageRecord> $badWords
      */
     public function __construct(
         #[Id, Column(type: 'text', length: 36)]
-        public Uuid $id,
+        public UuidInterface $id,
 
         #[Column(type: 'integer')]
         public string $telegramId,
