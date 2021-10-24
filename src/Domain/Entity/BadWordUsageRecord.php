@@ -8,17 +8,18 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\UniqueConstraint;
-use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Uid\Uuid;
 
 #[Entity]
-#[UniqueConstraint(columns: ['user_id', 'telegram_chat_id', 'library_word_id'])]
+#[Index(fields: ['user', 'libraryWordId', 'telegramChatId'], name: 'idx_user_library_word_chat')]
 class BadWordUsageRecord
 {
     public function __construct(
-        #[Id, Column(type: 'uuid', length: 36)]
-        public UuidInterface $id,
+        #[Id, Column(type: 'uuid')]
+        public Uuid $id,
 
         #[ManyToOne(targetEntity: User::class)]
         public User $user,
@@ -29,8 +30,8 @@ class BadWordUsageRecord
         #[Column(type: 'integer')]
         public int $telegramChatId,
 
-        #[Column(type: 'uuid', length: 36)]
-        public UuidInterface $libraryWordId,
+        #[Column(type: 'uuid')]
+        public Uuid $libraryWordId,
 
         #[Column(type: 'datetime')]
         public DateTimeInterface $sentAt,

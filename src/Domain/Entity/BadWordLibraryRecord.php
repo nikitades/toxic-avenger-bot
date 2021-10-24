@@ -9,18 +9,18 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\UniqueConstraint;
-use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Uid\Uuid;
 
 #[Entity]
 #[UniqueConstraint(fields: ['telegramChatId', 'text'])]
 class BadWordLibraryRecord
 {
     public function __construct(
-        #[Id, Column(type: 'uuid', length: 36)]
-        public UuidInterface $id,
+        #[Id, Column(type: 'uuid', nullable: true)]
+        public ?Uuid $id,
 
-        #[Column(type: 'integer')]
-        public int $telegramChatId,
+        #[Column(type: 'integer', nullable: true)]
+        public ?int $telegramChatId,
 
         #[Column(type: 'text')]
         public string $text,
@@ -28,8 +28,8 @@ class BadWordLibraryRecord
         #[Column(type: 'boolean')]
         public bool $active,
 
-        #[Column(type: 'datetime')]
-        public DateTimeInterface $addedAt,
+        #[Column(type: 'datetime', nullable: true)]
+        public ?DateTimeInterface $addedAt,
     ) {
     }
 }

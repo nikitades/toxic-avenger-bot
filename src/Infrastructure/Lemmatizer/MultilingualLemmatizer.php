@@ -14,7 +14,7 @@ class MultilingualLemmatizer implements LemmatizerInterface
      */
     public function __construct(
         private iterable $lemmatizers,
-        private Language $languageDetector, //TODO make language detector being constructed from factory
+        private Language $languageDetector,
     ) {
     }
 
@@ -49,6 +49,6 @@ class MultilingualLemmatizer implements LemmatizerInterface
             $lemmatizers,
         );
 
-        return $lemmatizerMap[$language] ?? $lemmatizerMap['ru'];
+        return $lemmatizerMap[$language] ?? $lemmatizerMap['ru']; //fallback lemmatizer
     }
 }

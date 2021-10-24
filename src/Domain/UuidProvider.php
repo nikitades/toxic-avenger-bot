@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Nikitades\ToxicAvenger\Domain;
 
-use Ramsey\Uuid\Uuid;
-use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Uid\Uuid;
 
 class UuidProvider
 {
-    public function provide(): UuidInterface
+    public function provide(): Uuid
     {
-        return Uuid::uuid4();
+        return Uuid::v4();
     }
 }

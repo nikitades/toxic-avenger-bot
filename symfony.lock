@@ -1,7 +1,4 @@
 {
-    "brick/math": {
-        "version": "0.9.3"
-    },
     "composer/package-versions-deprecated": {
         "version": "1.11.99.4"
     },
@@ -188,12 +185,6 @@
     },
     "ralouphie/getallheaders": {
         "version": "3.0.3"
-    },
-    "ramsey/collection": {
-        "version": "1.2.1"
-    },
-    "ramsey/uuid": {
-        "version": "4.2.3"
     },
     "sebastian/cli-parser": {
         "version": "1.0.1"
@@ -382,6 +373,9 @@
     "symfony/polyfill-php81": {
         "version": "v1.23.0"
     },
+    "symfony/polyfill-uuid": {
+        "version": "v1.23.0"
+    },
     "symfony/process": {
         "version": "v5.3.7"
     },
@@ -424,6 +418,9 @@
     },
     "symfony/string": {
         "version": "v5.3.7"
+    },
+    "symfony/uid": {
+        "version": "v5.3.3"
     },
     "symfony/var-dumper": {
         "version": "v5.3.8"

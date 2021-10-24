@@ -19,12 +19,14 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
         parent::__construct($registry, User::class);
     }
 
+    public function save(User $user): void
+    {
+        $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
+    }
+
     public function findByTelegramId(int $telegramId): ?User
     {
-        $sql = $this->createQueryBuilder('u')
-        ->where('u.telegramId = :tgId')->setParameter('tgId', $telegramId)
-        ->getQuery()->getSQL();
-
         return $this->createQueryBuilder('u')
             ->where('u.telegramId = :tgId')->setParameter('tgId', $telegramId)
             ->getQuery()
