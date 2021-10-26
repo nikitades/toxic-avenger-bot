@@ -28,13 +28,33 @@ class AddBadWordToLibraryCommandHandler implements MessageHandlerInterface
             possibleBadWords: $lemmas
         );
 
+        $activeBadWords = array_filter(
+            $existingBadWords,
+            fn (BadWordLibraryRecord $bwlr): bool => $bwlr->active
+        );
+
+        $inactiveBadWords = array_filter(
+            $existingBadWords,
+            fn (BadWordLibraryRecord $bwlr): bool => !$bwlr->active
+        );
+
         $newLemmas = array_diff(
             $lemmas,
             array_map(
                 fn (BadWordLibraryRecord $badWordLibraryRecord): string => $badWordLibraryRecord->text,
-                $existingBadWords
+                $activeBadWords
             )
         );
+
+        $inactiveLemmas = array_diff(
+            $lemmas,
+            array_map(
+                fn (BadWordLibraryRecord $badWordLibraryRecord): string => $badWordLibraryRecord->text,
+                $inactiveBadWords
+            )
+        );
+
+        $this->badWordLibraryRecordRepository->enableWords($inactiveLemmas, $command->telegramMessageId);
 
         $newBadWordLibraryRecords = array_map(
             fn (string $text): BadWordLibraryRecord => new BadWordLibraryRecord(

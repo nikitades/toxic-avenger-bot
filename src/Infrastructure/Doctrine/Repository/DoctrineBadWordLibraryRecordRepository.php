@@ -22,6 +22,20 @@ class DoctrineBadWordLibraryRecordRepository extends ServiceEntityRepository imp
     /**
      * {@inheritDoc}
      */
+    public function enableWords(array $lemmasToEnable, int $telegramMessageId): void
+    {
+        $this->createQueryBuilder('bwl')
+            ->update()
+            ->set('bwl.active', true)
+            ->set('bwl.telegramMessageId', $telegramMessageId)
+            ->where('bwl.text IN(:lemmasToEnable)')->set('lemmasToEnable', $lemmasToEnable)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function save(array $badWordLibraryRecords): void
     {
         foreach ($badWordLibraryRecords as $badWordLibraryRecord) {

@@ -30,4 +30,12 @@ interface BadWordLibraryRecordRepositoryInterface
     public function save(
         array $badWordLibraryRecords
     ): void;
+
+    /**
+     * @param array<string> $lemmasToEnable
+     */
+    public function enableWords(
+        array $lemmasToEnable,
+        int $telegramMessageId,
+    ): void;
 }

@@ -24,9 +24,9 @@ class BadWordsLibrary
     public function getForChat(int $telegramChatId, array $lemmas): array
     {
         $itemsFromDb = $this->badWordLibraryRecordRepository->findManyWithinChat(
-                chatId: $telegramChatId,
-                possibleBadWords: $lemmas
-            );
+            chatId: $telegramChatId,
+            possibleBadWords: $lemmas
+        );
 
         $summaryData = array_merge(
                 $itemsFromDb,
