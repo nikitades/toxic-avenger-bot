@@ -16,4 +16,18 @@ interface BadWordLibraryRecordRepositoryInterface
         int $chatId,
         array $possibleBadWords
     ): array;
+
+    /**
+     * @return array<BadWordLibraryRecord>
+     */
+    public function findAddedByMessageId(
+        int $messageId,
+    ): array;
+
+    /**
+     * @param array<BadWordLibraryRecord> $badWordLibraryRecords
+     */
+    public function save(
+        array $badWordLibraryRecords
+    ): void;
 }

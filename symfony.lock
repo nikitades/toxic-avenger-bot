@@ -434,6 +434,12 @@
     "symplify/easy-coding-standard": {
         "version": "9.4.70"
     },
+    "thecodingmachine/phpstan-safe-rule": {
+        "version": "v1.0.1"
+    },
+    "thecodingmachine/safe": {
+        "version": "v1.3.3"
+    },
     "theseer/tokenizer": {
         "version": "1.2.1"
     },

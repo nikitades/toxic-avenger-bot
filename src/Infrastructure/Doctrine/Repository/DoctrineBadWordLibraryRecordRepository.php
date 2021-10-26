@@ -22,6 +22,29 @@ class DoctrineBadWordLibraryRecordRepository extends ServiceEntityRepository imp
     /**
      * {@inheritDoc}
      */
+    public function save(array $badWordLibraryRecords): void
+    {
+        foreach ($badWordLibraryRecords as $badWordLibraryRecord) {
+            $this->getEntityManager()->persist($badWordLibraryRecord);
+        }
+
+        $this->getEntityManager()->flush();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findAddedByMessageId(int $messageId): array
+    {
+        return $this->createQueryBuilder('bwl')
+            ->where('bwl.telegramMessageId = :tgMsgId')->setParameter('tgMsgId', $messageId)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function findManyWithinChat(int $chatId, array $possibleBadWords): array
     {
         return $this->createQueryBuilder('bwl')

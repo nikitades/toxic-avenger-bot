@@ -9,12 +9,15 @@ use Longman\TelegramBot\Commands\Command;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Telegram;
+use Nikitades\ToxicAvenger\App\CommandDependencies;
+use Nikitades\ToxicAvenger\App\Telegram\BusAwareUserCommand;
+use Nikitades\ToxicAvenger\App\Telegram\Command\FindToxicCommand;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class BusAwareTelegram extends Telegram
 {
     public function __construct(
-        private MessageBusInterface $commandBus,
+        protected CommandDependencies $commandDependencies,
         string $api_key,
         string $bot_username = '',
     ) {
@@ -48,7 +51,7 @@ class BusAwareTelegram extends Telegram
                 $command_obj = new $command_class(
                     $this,
                     $this->update,
-                    $this->commandBus,
+                    $this->commandDependencies,
                 );
 
                 if (Command::AUTH_SYSTEM === $auth && $command_obj instanceof SystemCommand) {

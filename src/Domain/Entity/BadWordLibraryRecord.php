@@ -22,6 +22,9 @@ class BadWordLibraryRecord
         #[Column(type: 'integer', nullable: true)]
         public ?int $telegramChatId,
 
+        #[Column(type: 'integer', nullable: true)]
+        public ?int $telegramMessageId,
+
         #[Column(type: 'text')]
         public string $text,
 

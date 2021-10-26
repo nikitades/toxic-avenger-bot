@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Nikitades\ToxicAvenger\App\Telegram\Command;
 
-use DateTimeImmutable;
+use Safe\DateTimeImmutable;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
 use Nikitades\ToxicAvenger\App\Telegram\BusAwareSystemCommand;
@@ -14,7 +14,7 @@ class GenericMessageCommand extends BusAwareSystemCommand
 {
     public function execute(): ServerResponse
     {
-        $this->messageBusInterface->dispatch(
+        $this->commandDependencies->messageBusInterface->dispatch(
             new NewMessageCommand(
                 text: $this->getMessage()->getText() ?? '',
                 userId: $this->getMessage()->getFrom()->getId(),
