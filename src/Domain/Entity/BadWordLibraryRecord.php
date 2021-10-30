@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Nikitades\ToxicAvenger\Domain\Entity;
 
-use DateTimeInterface;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\UniqueConstraint;
+use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 
 #[Entity]
@@ -31,8 +31,8 @@ class BadWordLibraryRecord
         #[Column(type: 'boolean')]
         public bool $active,
 
-        #[Column(type: 'datetime', nullable: true)]
-        public ?DateTimeInterface $addedAt,
+        #[Column(type: 'datetime_immutable', nullable: true)]
+        public ?DateTimeImmutable $updatedAt,
     ) {
     }
 }

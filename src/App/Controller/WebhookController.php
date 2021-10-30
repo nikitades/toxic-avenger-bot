@@ -16,7 +16,7 @@ class WebhookController
     ) {
     }
 
-    #[Route(path: '/api/webhook', methods: ['POST'])]
+    #[Route(path: '/api/webhook', methods: ['POST'], format: 'json')]
     public function __invoke(): Response
     {
         $this->telegram->handle();

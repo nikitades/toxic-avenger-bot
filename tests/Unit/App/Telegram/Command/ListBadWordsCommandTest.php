@@ -8,17 +8,14 @@ use DateTimeImmutable;
 use GuzzleHttp\Psr7\Response;
 use Longman\TelegramBot\Entities\Update;
 use Nikitades\ToxicAvenger\App\CommandDependencies;
-use Nikitades\ToxicAvenger\App\Telegram\Command\AddBadWordCommand;
-use Nikitades\ToxicAvenger\Domain\Command\AddBadWordsToLibrary\AddBadWordsToLibraryCommand;
+use Nikitades\ToxicAvenger\App\Telegram\Command\ListBadWordsCommand;
 use Nikitades\ToxicAvenger\Domain\Entity\BadWordLibraryRecord;
 use Nikitades\ToxicAvenger\Domain\Repository\BadWordLibraryRecordRepositoryInterface;
 use Nikitades\ToxicAvenger\Tests\Unit\GenericTelegramCommandTest;
-use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
-use stdClass;
 
-class AddBadWordCommandTest extends GenericTelegramCommandTest
+class ListBadWordsCommandTest extends GenericTelegramCommandTest
 {
     /**
      * @dataProvider provideTestData
@@ -36,23 +33,12 @@ class AddBadWordCommandTest extends GenericTelegramCommandTest
         $this->httpClientContainer->remember([new Response(status: 200, headers: [], body: '{}')]);
 
         $messageBus = $this->createMock(MessageBusInterface::class);
-        $messageBus->expects(static::once())
-            ->method('dispatch')
-            ->with(
-                new AddBadWordsToLibraryCommand(
-                    text: $text,
-                    telegramChatId: $chatId,
-                    telegramMessageId: $messageId,
-                    telegramUserId: $userId,
-                    updatedAt: (new DateTimeImmutable('now'))->setTimestamp($time),
-                ),
-            )
-            ->willReturn(new Envelope(new stdClass()));
+        $messageBus->expects(static::never())->method('dispatch');
 
         $badWordLibraryRecordRepository = $this->createMock(BadWordLibraryRecordRepositoryInterface::class);
         $badWordLibraryRecordRepository->expects(static::once())
-            ->method('findAddedByMessageId')
-            ->with($messageId)
+            ->method('findActiveFromChat')
+            ->with($chatId)
             ->willReturn($badWordLibraryRecords);
 
         $deps = new CommandDependencies(
@@ -60,7 +46,7 @@ class AddBadWordCommandTest extends GenericTelegramCommandTest
             badWordLibraryRecordRepository: $badWordLibraryRecordRepository,
         );
 
-        (new AddBadWordCommand(
+        (new ListBadWordsCommand(
             telegram: $this->telegram,
             update: new Update(
                 data: [
@@ -73,7 +59,7 @@ class AddBadWordCommandTest extends GenericTelegramCommandTest
                             'id' => $userId,
                         ],
                         'date' => $time,
-                        'text' => '/addbadword ' . $text,
+                        'text' => '/listbadwords ' . $text,
                     ],
                 ],
                 bot_username: 'bot',
@@ -102,7 +88,7 @@ class AddBadWordCommandTest extends GenericTelegramCommandTest
             'text' => 'privet',
             'time' => time(),
             'badWordLibraryRecords' => [],
-            'expectedString' => 'chat_id=2222&text=No+new+words+registered&parse_mode=markdown',
+            'expectedString' => 'chat_id=2222&text=No+bad+registered+in+this+chat&parse_mode=markdown',
         ];
 
         yield 'bad word library records are found' => [
@@ -129,7 +115,7 @@ class AddBadWordCommandTest extends GenericTelegramCommandTest
                     updatedAt: (new DateTimeImmutable('now'))->setTimestamp(time()),
                 ),
             ],
-            'expectedString' => 'chat_id=2222&text=Added%3A+%2ALorem%2A%2C+%2AIpsum%2A&parse_mode=markdown',
+            'expectedString' => 'chat_id=2222&text=Bad+words%3A+%0A%2ALorem%2A%0A%2AIpsum%2A&parse_mode=markdown',
         ];
     }
 }

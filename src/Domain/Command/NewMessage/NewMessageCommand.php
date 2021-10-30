@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Nikitades\ToxicAvenger\Domain\Command\NewMessage;
 
-use DateTimeInterface;
+use DateTimeImmutable;
 use JetBrains\PhpStorm\Immutable;
 
 #[Immutable]
@@ -16,7 +16,7 @@ final class NewMessageCommand
         public string $userName,
         public int $chatId,
         public int $messageId,
-        public DateTimeInterface $sentAt,
+        public DateTimeImmutable $sentAt,
     ) {
     }
 }

@@ -7,8 +7,6 @@ namespace Nikitades\ToxicAvenger\Infrastructure\Lemmatizer;
 use LanguageDetection\Language;
 use Nikitades\ToxicAvenger\Domain\LemmatizerInterface;
 
-use function Safe\array_combine;
-
 class MultilingualLemmatizer implements LemmatizerInterface
 {
     /**

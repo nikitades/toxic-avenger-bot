@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Nikitades\ToxicAvenger\Domain\Command\AddBadWordToLibrary;
+namespace Nikitades\ToxicAvenger\Domain\Command\AddBadWordsToLibrary;
 
 use Nikitades\ToxicAvenger\Domain\Entity\BadWordLibraryRecord;
 use Nikitades\ToxicAvenger\Domain\LemmatizerInterface;
@@ -10,7 +10,7 @@ use Nikitades\ToxicAvenger\Domain\Repository\BadWordLibraryRecordRepositoryInter
 use Nikitades\ToxicAvenger\Domain\UuidProvider;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-class AddBadWordToLibraryCommandHandler implements MessageHandlerInterface
+class AddBadWordsToLibraryCommandHandler implements MessageHandlerInterface
 {
     public function __construct(
         private LemmatizerInterface $lemmatizer,
@@ -19,42 +19,42 @@ class AddBadWordToLibraryCommandHandler implements MessageHandlerInterface
     ) {
     }
 
-    public function __invoke(AddBadWordToLibraryCommand $command): void
+    public function __invoke(AddBadWordsToLibraryCommand $command): void
     {
         $lemmas = $this->lemmatizer->lemmatizePhraseWithOnlyMeaningful($command->text);
 
-        $existingBadWords = $this->badWordLibraryRecordRepository->findManyWithinChat(
+        $existingBadWords = $this->badWordLibraryRecordRepository->findManyInChatFromList(
             chatId: $command->telegramChatId,
-            possibleBadWords: $lemmas
+            possibleBadWordLemmas: $lemmas,
         );
 
         $activeBadWords = array_filter(
             $existingBadWords,
-            fn (BadWordLibraryRecord $bwlr): bool => $bwlr->active
-        );
-
-        $inactiveBadWords = array_filter(
-            $existingBadWords,
-            fn (BadWordLibraryRecord $bwlr): bool => !$bwlr->active
+            fn (BadWordLibraryRecord $bwlr): bool => $bwlr->active,
         );
 
         $newLemmas = array_diff(
             $lemmas,
             array_map(
                 fn (BadWordLibraryRecord $badWordLibraryRecord): string => $badWordLibraryRecord->text,
-                $activeBadWords
-            )
+                $existingBadWords,
+            ),
         );
 
         $inactiveLemmas = array_diff(
             $lemmas,
             array_map(
                 fn (BadWordLibraryRecord $badWordLibraryRecord): string => $badWordLibraryRecord->text,
-                $inactiveBadWords
-            )
+                $activeBadWords,
+            ),
         );
 
-        $this->badWordLibraryRecordRepository->enableWords($inactiveLemmas, $command->telegramMessageId);
+        $this->badWordLibraryRecordRepository->enableWords(
+            lemmasToEnable: $inactiveLemmas,
+            telegramChatId: $command->telegramChatId,
+            telegramMessageId: $command->telegramMessageId,
+            updatedAt: $command->updatedAt,
+        );
 
         $newBadWordLibraryRecords = array_map(
             fn (string $text): BadWordLibraryRecord => new BadWordLibraryRecord(
@@ -63,9 +63,9 @@ class AddBadWordToLibraryCommandHandler implements MessageHandlerInterface
                 telegramMessageId: $command->telegramMessageId,
                 text: $text,
                 active: true,
-                addedAt: $command->addedAt
+                updatedAt: $command->updatedAt,
             ),
-            $newLemmas
+            $newLemmas,
         );
 
         $this->badWordLibraryRecordRepository->save($newBadWordLibraryRecords);

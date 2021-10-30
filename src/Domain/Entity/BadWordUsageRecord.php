@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Nikitades\ToxicAvenger\Domain\Entity;
 
-use DateTimeInterface;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\UniqueConstraint;
+use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 
 #[Entity]
@@ -21,7 +20,7 @@ class BadWordUsageRecord
         #[Id, Column(type: 'uuid')]
         public Uuid $id,
 
-        #[ManyToOne(targetEntity: User::class)]
+        #[ManyToOne(targetEntity: User::class, inversedBy: 'badWords')]
         public User $user,
 
         #[Column(type: 'integer')]
@@ -33,8 +32,8 @@ class BadWordUsageRecord
         #[Column(type: 'uuid')]
         public Uuid $libraryWordId,
 
-        #[Column(type: 'datetime')]
-        public DateTimeInterface $sentAt,
+        #[Column(type: 'datetime_immutable')]
+        public DateTimeImmutable $sentAt,
     ) {
     }
 }

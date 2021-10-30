@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Nikitades\ToxicAvenger\Domain\Command\AddBadWordToLibrary;
+namespace Nikitades\ToxicAvenger\Domain\Command\DisableBadWordsInLibrary;
 
-use DateTimeInterface;
+use DateTimeImmutable;
 use JetBrains\PhpStorm\Immutable;
 
 #[Immutable]
-class AddBadWordToLibraryCommand
+class DisableBadWordsInLibraryCommand
 {
     public function __construct(
         public string $text,
         public int $telegramChatId,
         public int $telegramMessageId,
         public int $telegramUserId,
-        public DateTimeInterface $addedAt,
+        public DateTimeImmutable $updatedAt,
     ) {
     }
 }

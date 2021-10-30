@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Nikitades\ToxicAvenger\Domain;
 
-use Safe\DateTimeImmutable;
+use DateTimeImmutable;
 
 class SystemClock
 {

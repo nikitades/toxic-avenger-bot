@@ -1,6 +1,6 @@
 doctrine:
     dbal:
-        url: '%env(resolve:DATABASE_URL)%'
+        url: "%env(resolve:DATABASE_URL)%"
         types:
             uuid: Symfony\Bridge\Doctrine\Types\UuidType
 
@@ -15,5 +15,5 @@ doctrine:
             Nikitades\ToxicAvenger\Domain\Entity:
                 is_bundle: false
                 type: attribute
-                dir: '%kernel.project_dir%/src/Domain/Entity'
+                dir: "%kernel.project_dir%/src/Domain/Entity"
                 prefix: 'Nikitades\ToxicAvenger\Domain\Entity'

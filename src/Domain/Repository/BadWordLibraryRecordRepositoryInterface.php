@@ -4,17 +4,25 @@ declare(strict_types=1);
 
 namespace Nikitades\ToxicAvenger\Domain\Repository;
 
+use DateTimeImmutable;
 use Nikitades\ToxicAvenger\Domain\Entity\BadWordLibraryRecord;
 
 interface BadWordLibraryRecordRepositoryInterface
 {
     /**
-     * @param array<string> $possibleBadWords
      * @return array<BadWordLibraryRecord>
      */
-    public function findManyWithinChat(
+    public function findActiveFromChat(
         int $chatId,
-        array $possibleBadWords
+    ): array;
+
+    /**
+     * @param array<string> $possibleBadWordLemmas
+     * @return array<BadWordLibraryRecord>
+     */
+    public function findManyInChatFromList(
+        int $chatId,
+        array $possibleBadWordLemmas,
     ): array;
 
     /**
@@ -25,10 +33,17 @@ interface BadWordLibraryRecordRepositoryInterface
     ): array;
 
     /**
+     * @return array<BadWordLibraryRecord>
+     */
+    public function findDisabledByMessageId(
+        int $messageId,
+    ): array;
+
+    /**
      * @param array<BadWordLibraryRecord> $badWordLibraryRecords
      */
     public function save(
-        array $badWordLibraryRecords
+        array $badWordLibraryRecords,
     ): void;
 
     /**
@@ -36,6 +51,18 @@ interface BadWordLibraryRecordRepositoryInterface
      */
     public function enableWords(
         array $lemmasToEnable,
+        int $telegramChatId,
         int $telegramMessageId,
+        DateTimeImmutable $updatedAt,
+    ): void;
+
+    /**
+     * @param array<string> $lemmasToDisable
+     */
+    public function disableWords(
+        array $lemmasToDisable,
+        int $telegramChatId,
+        int $telegramMessageId,
+        DateTimeImmutable $updatedAt,
     ): void;
 }

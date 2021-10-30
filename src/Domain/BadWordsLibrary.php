@@ -8,8 +8,6 @@ use Nikitades\ToxicAvenger\Domain\Entity\BadWordLibraryRecord;
 use Nikitades\ToxicAvenger\Domain\Repository\BadWordLibraryRecordRepositoryInterface;
 use Symfony\Component\Uid\Uuid;
 
-use function Safe\array_combine;
-
 class BadWordsLibrary
 {
     public function __construct(
@@ -23,9 +21,9 @@ class BadWordsLibrary
      */
     public function getForChat(int $telegramChatId, array $lemmas): array
     {
-        $itemsFromDb = $this->badWordLibraryRecordRepository->findManyWithinChat(
+        $itemsFromDb = $this->badWordLibraryRecordRepository->findManyInChatFromList(
             chatId: $telegramChatId,
-            possibleBadWords: $lemmas
+            possibleBadWordLemmas: $lemmas
         );
 
         $summaryData = array_merge(
@@ -57,7 +55,7 @@ class BadWordsLibrary
                 text: 'пизда',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('0c6351b8-ed69-4a66-8b69-f8342dc3dd86'),
@@ -65,7 +63,7 @@ class BadWordsLibrary
                 text: 'мать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('d8474a7f-650e-4654-97d6-6fc557265922'),
@@ -73,7 +71,7 @@ class BadWordsLibrary
                 text: 'сука',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('b1cdb00a-30c5-44f0-a61c-9c7f8f0331e1'),
@@ -81,7 +79,7 @@ class BadWordsLibrary
                 text: 'жопа',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('dacbcbbd-e2f5-40ac-ae72-ef869b88d1e5'),
@@ -89,7 +87,7 @@ class BadWordsLibrary
                 text: 'анус',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('3375ca8f-dfe5-4d8b-9927-cf8b5b057874'),
@@ -97,7 +95,7 @@ class BadWordsLibrary
                 text: 'ебучий',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('9eb5fc44-c878-4652-9b40-030bc25850ac'),
@@ -105,7 +103,7 @@ class BadWordsLibrary
                 text: 'пидор',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('add82e98-41da-4afd-94ac-0cda1fa58018'),
@@ -113,7 +111,7 @@ class BadWordsLibrary
                 text: 'кал',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('ef731295-1f17-4ba2-93ef-0322d736ad46'),
@@ -121,7 +119,7 @@ class BadWordsLibrary
                 text: 'гавно',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('835f9962-5f59-450b-aa4d-158fe77adb07'),
@@ -129,7 +127,7 @@ class BadWordsLibrary
                 text: 'вонючий',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('832b1fc1-7ffd-4d09-a6df-62c446cf5916'),
@@ -137,7 +135,7 @@ class BadWordsLibrary
                 text: 'пенис',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a016452f-d145-4f70-96ee-fe4ee2cb1116'),
@@ -145,7 +143,7 @@ class BadWordsLibrary
                 text: 'член',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('b554c06c-d83b-4096-a58f-4c28bd0c0d7a'),
@@ -153,7 +151,7 @@ class BadWordsLibrary
                 text: 'пиписька',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('f207edaa-0e6f-416c-85a4-8ca3f580ec5a'),
@@ -161,7 +159,7 @@ class BadWordsLibrary
                 text: 'вонючий',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('bd47575e-39b0-44c5-9880-b7fb9764a43d'),
@@ -169,7 +167,7 @@ class BadWordsLibrary
                 text: 'немытый',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('7ec6db0e-ddb7-4f1c-a7c3-5cef6a2a5387'),
@@ -177,7 +175,7 @@ class BadWordsLibrary
                 text: 'пелотка',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('56dfb2b0-58ed-480d-9058-f589d91d5e7f'),
@@ -185,7 +183,7 @@ class BadWordsLibrary
                 text: 'небритая',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('bbbe08da-6a0f-4357-8c33-ac40cc33ff74'),
@@ -193,7 +191,7 @@ class BadWordsLibrary
                 text: 'онанизм',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('8df390d8-b125-4e48-a172-dc792110682e'),
@@ -201,7 +199,7 @@ class BadWordsLibrary
                 text: 'блядь',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('036eb000-3e28-4f4d-9c7f-8f59fd7f82b6'),
@@ -209,7 +207,7 @@ class BadWordsLibrary
                 text: 'бля',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('3d6fa2a1-10a0-4c38-9620-7286fd2d7bd4'),
@@ -217,7 +215,7 @@ class BadWordsLibrary
                 text: 'очко',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('44f9fa98-fed9-465f-bbef-2587a0f79f46'),
@@ -225,7 +223,7 @@ class BadWordsLibrary
                 text: 'нефпесда',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('77bd9953-0b64-4850-8205-d5383757d4f5'),
@@ -233,7 +231,7 @@ class BadWordsLibrary
                 text: 'мандавошка',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('398739b8-beae-4a04-aea6-e99e6ff08db9'),
@@ -241,7 +239,7 @@ class BadWordsLibrary
                 text: 'лобковый',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a187c505-dd6d-41f4-83e7-9f840019a6d6'),
@@ -249,7 +247,7 @@ class BadWordsLibrary
                 text: 'головка',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('87b28e53-ecb3-416f-8f8c-6fd8eda56dfc'),
@@ -257,7 +255,7 @@ class BadWordsLibrary
                 text: 'сцуко',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('1f68a78d-0480-494b-9ada-85ec5dd77333'),
@@ -265,7 +263,7 @@ class BadWordsLibrary
                 text: 'педрила',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('0ac18b25-5e66-4523-a364-2f14751376a8'),
@@ -273,7 +271,7 @@ class BadWordsLibrary
                 text: 'злоебучий',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a376f207-808e-4bef-8389-b928398acfe7'),
@@ -281,7 +279,7 @@ class BadWordsLibrary
                 text: 'жопа',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('4f2e778f-ea97-481b-9351-6b027d109992'),
@@ -289,7 +287,7 @@ class BadWordsLibrary
                 text: 'заебаться',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('879cb9a3-ce8d-428e-82d9-cfe50d9e2e29'),
@@ -297,7 +295,7 @@ class BadWordsLibrary
                 text: 'заебывать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('9f11d077-1351-47ef-888e-3b0d29210ab7'),
@@ -305,7 +303,7 @@ class BadWordsLibrary
                 text: 'комар',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('bf471eb7-e3f0-4368-99d6-5e5cc748fea6'),
@@ -313,7 +311,7 @@ class BadWordsLibrary
                 text: 'ослиный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('d16425cd-a7d3-4615-9508-6270d6bc698c'),
@@ -321,7 +319,7 @@ class BadWordsLibrary
                 text: 'моча',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('6010ceb5-0ba4-465f-bc17-b7429c86d640'),
@@ -329,7 +327,7 @@ class BadWordsLibrary
                 text: 'ебать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('bf7d24bc-8244-488f-8f0f-32a06f1d628e'),
@@ -337,7 +335,7 @@ class BadWordsLibrary
                 text: 'срака',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('742255a2-ae52-464e-9e80-24b4c87c13e9'),
@@ -345,7 +343,7 @@ class BadWordsLibrary
                 text: 'злоебучий',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a613b76d-172c-42f9-91cb-d136b7afd883'),
@@ -353,7 +351,7 @@ class BadWordsLibrary
                 text: 'пиздопроебина',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('8e48fab4-6e01-4dde-a87b-b038fbec2e56'),
@@ -361,7 +359,7 @@ class BadWordsLibrary
                 text: 'сиська',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('096b658c-e8ab-4996-b24e-621df0610e30'),
@@ -369,7 +367,7 @@ class BadWordsLibrary
                 text: 'кобелиный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a25165a1-33c2-46dc-b390-411cb99518b7'),
@@ -377,7 +375,7 @@ class BadWordsLibrary
                 text: 'позорный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('3c7c3c30-d5df-48f3-8b81-5655ba783a73'),
@@ -385,7 +383,7 @@ class BadWordsLibrary
                 text: 'бобруйск',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('2ca4dbce-3d46-4381-bc9a-9fc3b4fb9cf9'),
@@ -393,7 +391,7 @@ class BadWordsLibrary
                 text: 'жывотное',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('8d0da33a-5c66-493f-8491-c12f39555fd1'),
@@ -401,7 +399,7 @@ class BadWordsLibrary
                 text: 'доярка',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('1eba6079-582b-492d-9957-93fa0649736e'),
@@ -409,7 +407,7 @@ class BadWordsLibrary
                 text: 'пипирка',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('6d1f628f-3e58-4558-8a95-779fd80d588e'),
@@ -417,7 +415,7 @@ class BadWordsLibrary
                 text: 'конский',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('b9e4e1ec-678f-4845-b6e4-43073df87670'),
@@ -425,7 +423,7 @@ class BadWordsLibrary
                 text: 'залупа',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('e3db01b6-ba9d-4a0d-904c-144cabc24c6b'),
@@ -433,7 +431,7 @@ class BadWordsLibrary
                 text: 'урод',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('c85c4012-7414-43af-9382-5f16fd74786b'),
@@ -441,7 +439,7 @@ class BadWordsLibrary
                 text: 'обсираться',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('083b6b4e-4eed-4fbe-935f-851d8edfb267'),
@@ -449,7 +447,7 @@ class BadWordsLibrary
                 text: 'импотент',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('88c446d3-52b8-46a7-8493-369489cdcd08'),
@@ -457,7 +455,7 @@ class BadWordsLibrary
                 text: 'сучий',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('78213047-4d67-4241-b3ae-5cfc40ca2fff'),
@@ -465,7 +463,7 @@ class BadWordsLibrary
                 text: 'потрох',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('cdb0263f-541f-41e8-b0ff-bc52b56e8874'),
@@ -473,7 +471,7 @@ class BadWordsLibrary
                 text: 'жопа',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('fc17fb79-a966-4b49-a2f4-109f7f4598b8'),
@@ -481,7 +479,7 @@ class BadWordsLibrary
                 text: 'голубой',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('e625e9bd-fd47-4d77-9556-cf3ce65c8130'),
@@ -489,7 +487,7 @@ class BadWordsLibrary
                 text: 'волосатый',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('f2942a92-afba-4226-95d0-cadb9499efac'),
@@ -497,7 +495,7 @@ class BadWordsLibrary
                 text: 'ротик',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('38c1e5fb-6d88-4f73-af74-9fb68a825911'),
@@ -505,7 +503,7 @@ class BadWordsLibrary
                 text: 'дура',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('660e917d-2fe6-4398-804c-ed30b06bea68'),
@@ -513,7 +511,7 @@ class BadWordsLibrary
                 text: 'импотент',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('16c52dcc-8578-41f2-94a1-bfd464d26b77'),
@@ -521,7 +519,7 @@ class BadWordsLibrary
                 text: 'пидор',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('fcca336b-28e5-405f-97b0-486c5b782a2c'),
@@ -529,7 +527,7 @@ class BadWordsLibrary
                 text: 'зловонный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('1f0d9404-d788-4bf0-b093-73c8077c37b7'),
@@ -537,7 +535,7 @@ class BadWordsLibrary
                 text: 'понос',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('aa9de68c-e1b4-4e23-9d4d-4f8c0df9ab0c'),
@@ -545,7 +543,7 @@ class BadWordsLibrary
                 text: 'глист',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('518066a3-1ee6-41dc-a857-c3a9734ac0ca'),
@@ -553,7 +551,7 @@ class BadWordsLibrary
                 text: 'беленький',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('00165a5e-a15e-4f51-88e9-c1b6898fad39'),
@@ -561,7 +559,7 @@ class BadWordsLibrary
                 text: 'унитаз',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('5cc94fd1-62df-440e-bccc-88617c250903'),
@@ -569,7 +567,7 @@ class BadWordsLibrary
                 text: 'посрать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('eed65e6b-ba62-4af1-ac05-b81030639b4a'),
@@ -577,7 +575,7 @@ class BadWordsLibrary
                 text: 'срать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a7f703ad-025d-48a8-8338-7d0f88ced54c'),
@@ -585,7 +583,7 @@ class BadWordsLibrary
                 text: 'ебаный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('51abe0e1-038d-4717-91ab-2f3efa5f74b0'),
@@ -593,7 +591,7 @@ class BadWordsLibrary
                 text: 'охуевать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('b8a63f59-7a40-4ae9-a96f-74d4f6c100ba'),
@@ -601,7 +599,7 @@ class BadWordsLibrary
                 text: 'сраный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('41b3422a-191c-45ad-ba58-f374cebd464a'),
@@ -609,7 +607,7 @@ class BadWordsLibrary
                 text: 'мастурбация',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('956f3e2a-ca8b-48ca-91ff-0fd6ed5ff780'),
@@ -617,7 +615,7 @@ class BadWordsLibrary
                 text: 'убиваться',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('db009717-bc76-4706-86c1-480d9f27b731'),
@@ -625,7 +623,7 @@ class BadWordsLibrary
                 text: 'онанюга',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('30de5aeb-06a9-47e5-b615-529a36c67625'),
@@ -633,7 +631,7 @@ class BadWordsLibrary
                 text: 'позорный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('9dfe9422-be3c-46ca-994c-5df8ed58308f'),
@@ -641,7 +639,7 @@ class BadWordsLibrary
                 text: 'рот',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('db6a2299-7ebf-4483-86f8-fa107f96596d'),
@@ -649,7 +647,7 @@ class BadWordsLibrary
                 text: 'сиська',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('87662189-c0f6-4fc8-b855-22258fc79ce5'),
@@ -657,7 +655,7 @@ class BadWordsLibrary
                 text: 'писька',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('36e74b2b-3f20-47fd-8dea-9fe9c958d4d1'),
@@ -665,7 +663,7 @@ class BadWordsLibrary
                 text: 'хуй',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('1553ab2e-a593-4271-bbac-4345348f271d'),
@@ -673,7 +671,7 @@ class BadWordsLibrary
                 text: 'уебенить',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('508b6646-42f9-4ab3-b9ec-884afb1ea135'),
@@ -681,7 +679,7 @@ class BadWordsLibrary
                 text: 'пиздоголовый',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('f53837fa-d493-4a8b-916a-f8c240011f6b'),
@@ -689,7 +687,7 @@ class BadWordsLibrary
                 text: 'слоновий',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('d5164aa6-c4a7-4bc4-91af-42f088fc1df4'),
@@ -697,7 +695,7 @@ class BadWordsLibrary
                 text: 'ебнуть',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('7f972d4b-6551-40ee-a962-1f835626160b'),
@@ -705,7 +703,7 @@ class BadWordsLibrary
                 text: 'пиздомандовый',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('4aef8f31-392d-4f1f-b092-f78d2477e190'),
@@ -713,7 +711,7 @@ class BadWordsLibrary
                 text: 'сракохер',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('12b701a4-d71c-4d17-b112-6014d9a3477a'),
@@ -721,7 +719,7 @@ class BadWordsLibrary
                 text: 'вафлезалупный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a7335534-42d4-4aea-b908-2b8c9a479aa7'),
@@ -729,7 +727,7 @@ class BadWordsLibrary
                 text: 'блядопиздища',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('de62a1e7-267a-4df4-bee6-22dc2677d27f'),
@@ -737,7 +735,7 @@ class BadWordsLibrary
                 text: 'перехуячить',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('fee13634-684b-4a39-ae59-e5c7a5049e4a'),
@@ -745,7 +743,7 @@ class BadWordsLibrary
                 text: 'хероебливый',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('0cbcedee-9ef2-40f9-b376-9e59375c765e'),
@@ -753,7 +751,7 @@ class BadWordsLibrary
                 text: 'еблезалупище',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a8df5cd1-f7cf-4e80-9f18-2c3f9042449b'),
@@ -761,7 +759,7 @@ class BadWordsLibrary
                 text: 'сука',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('31bfe539-8fc1-4d43-9f03-ee8d037068f3'),
@@ -769,7 +767,7 @@ class BadWordsLibrary
                 text: 'ссаный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('6061a8d9-f9f4-41c8-8c63-ea018bceffa0'),
@@ -777,7 +775,7 @@ class BadWordsLibrary
                 text: 'гондон',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a79cd1d9-5f39-40f7-9b05-64423655dd33'),
@@ -785,7 +783,7 @@ class BadWordsLibrary
                 text: 'штопаный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a7eb3e45-6385-4b8d-a1a9-029c27e4ab61'),
@@ -793,7 +791,7 @@ class BadWordsLibrary
                 text: 'клиторовна',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('50e93c50-58e7-4915-a0bf-b145f3bd02cc'),
@@ -801,7 +799,7 @@ class BadWordsLibrary
                 text: 'нехуй',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('8a127768-5eb4-4cc0-b426-9c3cffd68e59'),
@@ -809,7 +807,7 @@ class BadWordsLibrary
                 text: 'блядь',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('aba29449-10e1-4f98-b9cb-a6e3c3c8eaf4'),
@@ -817,7 +815,7 @@ class BadWordsLibrary
                 text: 'ебнуться',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('9d5acbb9-2485-4c7f-9de8-3d2851a897b5'),
@@ -825,7 +823,7 @@ class BadWordsLibrary
                 text: 'срака',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('4c5c079c-1168-458c-ba58-08a4fddd6b35'),
@@ -833,7 +831,7 @@ class BadWordsLibrary
                 text: 'лошадиный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('1efa262a-f371-436d-94fd-297f00937307'),
@@ -841,7 +839,7 @@ class BadWordsLibrary
                 text: 'сцукон',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('6fbdf8e7-8803-4e70-b83e-900dc30ee884'),
@@ -849,7 +847,7 @@ class BadWordsLibrary
                 text: 'йад',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('4c5be239-ba46-452d-b59b-8e406a9a33e5'),
@@ -857,7 +855,7 @@ class BadWordsLibrary
                 text: 'невъебенно',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('4fe9ebe4-41fc-43c4-b7a9-5d3594210d01'),
@@ -865,7 +863,7 @@ class BadWordsLibrary
                 text: 'педерестический',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('e492fd61-6581-4fff-b068-c0c5645609f3'),
@@ -873,7 +871,7 @@ class BadWordsLibrary
                 text: 'злоебучесть',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('68b33bc0-dda4-4de5-804d-adf69653499e'),
@@ -881,7 +879,7 @@ class BadWordsLibrary
                 text: 'мудак',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('5f49d783-ff5d-4ccd-8fa7-ee818cd91b1f'),
@@ -889,7 +887,7 @@ class BadWordsLibrary
                 text: 'нехуй',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('dfce8eed-8a62-4605-a43c-20829df9e337'),
@@ -897,7 +895,7 @@ class BadWordsLibrary
                 text: 'кончать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('59fb7712-6abe-48c9-baf2-fdc7adeca1a6'),
@@ -905,7 +903,7 @@ class BadWordsLibrary
                 text: 'пердун',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('64c34a69-de81-4167-8ecc-f55efc9ce28b'),
@@ -913,7 +911,7 @@ class BadWordsLibrary
                 text: 'сифилитичный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('b0ee98dc-129c-4012-9420-f7f576b38b72'),
@@ -921,7 +919,7 @@ class BadWordsLibrary
                 text: 'бугагага',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('8d5d25a0-edf8-4e5b-aea5-813d974a9e5c'),
@@ -929,7 +927,7 @@ class BadWordsLibrary
                 text: 'пенисович',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('98f2f79f-83b2-4b07-b460-7b4ab2f3602c'),
@@ -937,7 +935,7 @@ class BadWordsLibrary
                 text: 'писдувать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('2a167c20-254d-449f-89c9-7f8b48f28b6a'),
@@ -945,7 +943,7 @@ class BadWordsLibrary
                 text: 'кпсс',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('2c2a2a75-1d9d-49b4-953a-d2f2a4a860db'),
@@ -953,7 +951,7 @@ class BadWordsLibrary
                 text: 'залупень',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('c96025a3-40f8-4e3f-9908-c0897e2f3e2a'),
@@ -961,7 +959,7 @@ class BadWordsLibrary
                 text: 'хитровыебывать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('6aad51f8-677d-4860-9225-61beb93fca45'),
@@ -969,7 +967,7 @@ class BadWordsLibrary
                 text: 'ебля',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('ab5a7e79-5cf9-459e-9fb4-944c76607012'),
@@ -977,7 +975,7 @@ class BadWordsLibrary
                 text: 'педераст',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('63028004-9bd6-465e-801a-0607c8c7702c'),
@@ -985,7 +983,7 @@ class BadWordsLibrary
                 text: 'хуеть',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('154ff14d-c054-4b0a-8255-cd4b089b3502'),
@@ -993,7 +991,7 @@ class BadWordsLibrary
                 text: 'хуежопый',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('f3fef11b-ff17-4751-bdf7-1b0e76762200'),
@@ -1001,7 +999,7 @@ class BadWordsLibrary
                 text: 'хуезадый',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('0de53f73-1ab2-4265-85e9-e1a036b69f86'),
@@ -1009,7 +1007,7 @@ class BadWordsLibrary
                 text: 'хуибалаебанава',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('947e4e24-051f-45fc-817f-23625d0fe476'),
@@ -1017,7 +1015,7 @@ class BadWordsLibrary
                 text: 'морской',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('7d259c4d-5549-4cd4-a81f-75cf9b93081f'),
@@ -1025,7 +1023,7 @@ class BadWordsLibrary
                 text: 'хуйлан',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('60900e42-dc1f-4567-9614-f82b9926faa1'),
@@ -1033,7 +1031,7 @@ class BadWordsLibrary
                 text: 'хуйнюшка',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('7fe2a366-c0b3-4ff0-9772-ae1fb2e65fe8'),
@@ -1041,7 +1039,7 @@ class BadWordsLibrary
                 text: 'хуйпизда',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('f3b794ef-973f-48f8-b43b-0858d4670601'),
@@ -1049,7 +1047,7 @@ class BadWordsLibrary
                 text: 'хуюшка',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('497b0c2c-d258-4a42-8f2d-9f03ccaff97f'),
@@ -1057,7 +1055,7 @@ class BadWordsLibrary
                 text: 'хуйня',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('41f89f31-11b3-4feb-8b50-6c804c3dc723'),
@@ -1065,7 +1063,7 @@ class BadWordsLibrary
                 text: 'хуйлофан',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('5e010f22-5625-47fe-a48d-587b6c42d3b9'),
@@ -1073,7 +1071,7 @@ class BadWordsLibrary
                 text: 'хуево',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('f7ea1089-56b3-48d8-b1eb-98865731c2e0'),
@@ -1081,7 +1079,7 @@ class BadWordsLibrary
                 text: 'кукуево',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('3ba49668-f367-44b1-835c-058d5accbabf'),
@@ -1089,7 +1087,7 @@ class BadWordsLibrary
                 text: 'педерастин',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('95c6aeb0-57f6-4cce-989b-09ca9b68fe39'),
@@ -1097,7 +1095,7 @@ class BadWordsLibrary
                 text: 'пердак',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('8e8c5299-725e-4e43-8688-eeb7ff025587'),
@@ -1105,7 +1103,7 @@ class BadWordsLibrary
                 text: 'пидораска',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('6923e069-ac96-42cf-b8a5-5f7f1fb7d9b0'),
@@ -1113,7 +1111,7 @@ class BadWordsLibrary
                 text: 'выебывать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('b3189c32-1586-45af-99f5-13a30044e95e'),
@@ -1121,7 +1119,7 @@ class BadWordsLibrary
                 text: 'пиздлявый',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('ea7ab3d6-8c7f-4580-ac93-1882d2a2c178'),
@@ -1129,7 +1127,7 @@ class BadWordsLibrary
                 text: 'пиздоеб',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('255dc428-c8c9-4030-b56d-b6afb17975c2'),
@@ -1137,7 +1135,7 @@ class BadWordsLibrary
                 text: 'пиздокрывать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a45ec0d8-936f-4a7f-be2d-826eb33681f2'),
@@ -1145,7 +1143,7 @@ class BadWordsLibrary
                 text: 'еблан',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('5b26ca3d-8c06-41ec-bd01-71527179da6d'),
@@ -1153,7 +1151,7 @@ class BadWordsLibrary
                 text: 'пиздня',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('f191e109-a79d-4f66-857c-f79a6ac3584b'),
@@ -1161,7 +1159,7 @@ class BadWordsLibrary
                 text: 'сорочий',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('40e2d97b-1565-41d4-90e7-00dd7e24b1a6'),
@@ -1169,7 +1167,7 @@ class BadWordsLibrary
                 text: 'пиздувать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('4f6a2d8c-3245-47a3-95af-c8dd274c096d'),
@@ -1177,7 +1175,7 @@ class BadWordsLibrary
                 text: 'пиздюково',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('2c8a0b17-9f71-481f-b1a0-36e6f311edbb'),
@@ -1185,7 +1183,7 @@ class BadWordsLibrary
                 text: 'писька',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('86bcc83a-c00f-4c39-9feb-91b53017f23e'),
@@ -1193,7 +1191,7 @@ class BadWordsLibrary
                 text: 'порнопидор',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('ce666b86-fa6e-4f26-b68c-2c2c91dd287b'),
@@ -1201,7 +1199,7 @@ class BadWordsLibrary
                 text: 'похуй',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('c389481b-8b8c-4db8-973f-8fd634a8f5e8'),
@@ -1209,7 +1207,7 @@ class BadWordsLibrary
                 text: 'нахуй',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('c101e1fa-13e3-49a4-a063-87dd07c7b43c'),
@@ -1217,7 +1215,7 @@ class BadWordsLibrary
                 text: 'пиздык',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('4936f5e5-f333-409c-a860-344bb3c276b9'),
@@ -1225,7 +1223,7 @@ class BadWordsLibrary
                 text: 'хуяк',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('b035c844-2c6c-4133-9e8f-72a0311195f8'),
@@ -1233,7 +1231,7 @@ class BadWordsLibrary
                 text: 'пиздушенция',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('40aa47ed-72d2-4260-aa5b-e32e8701ba5b'),
@@ -1241,7 +1239,7 @@ class BadWordsLibrary
                 text: 'переблюд',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('b418e6d2-4714-455b-bfe5-d93f7ee7bce6'),
@@ -1249,7 +1247,7 @@ class BadWordsLibrary
                 text: 'мохнатый',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('53e71b6f-4ba0-447e-97bf-3aae573dd0d7'),
@@ -1257,7 +1255,7 @@ class BadWordsLibrary
                 text: 'клитор',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('97343af7-3063-46eb-859f-cad26bac0910'),
@@ -1265,7 +1263,7 @@ class BadWordsLibrary
                 text: 'серево',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('551a08e3-5675-40df-ba8c-91beb14073ec'),
@@ -1273,7 +1271,7 @@ class BadWordsLibrary
                 text: 'сракохуярище',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a172261c-55bb-4f8c-9459-fb0f56e25f4f'),
@@ -1281,7 +1279,7 @@ class BadWordsLibrary
                 text: 'страхопердь',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('5593b818-d8de-4977-9e47-cfe6a982738b'),
@@ -1289,7 +1287,7 @@ class BadWordsLibrary
                 text: 'затыкаться',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('3cee3db6-fe9e-49cc-a9ed-993238c3acb8'),
@@ -1297,7 +1295,7 @@ class BadWordsLibrary
                 text: 'сукон',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('cb49db15-6633-4acd-9823-286dcf1f0b4d'),
@@ -1305,7 +1303,7 @@ class BadWordsLibrary
                 text: 'съебнуть',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('bd9f22b0-bab9-4755-88f8-880198a37e57'),
@@ -1313,7 +1311,7 @@ class BadWordsLibrary
                 text: 'мужчина',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('d20c7789-30e8-48a2-92fb-0fb6c8629fd5'),
@@ -1321,7 +1319,7 @@ class BadWordsLibrary
                 text: 'хуй',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('20461465-ac31-44de-9d46-1c6408018af8'),
@@ -1329,7 +1327,7 @@ class BadWordsLibrary
                 text: 'тихобздувать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('55fa0c41-5824-47b9-a763-2f05399e27f7'),
@@ -1337,7 +1335,7 @@ class BadWordsLibrary
                 text: 'трандюк',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('22b0ed3d-293b-4003-84ce-89074eded4a3'),
@@ -1345,7 +1343,7 @@ class BadWordsLibrary
                 text: 'триждымудоблядскоепиздопро',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('e2937e53-ad85-4e7a-8de6-dd740a2e54bd'),
@@ -1353,7 +1351,7 @@ class BadWordsLibrary
                 text: 'триждыблятский',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('c6802997-c956-4684-b501-87a5b32e3942'),
@@ -1361,7 +1359,7 @@ class BadWordsLibrary
                 text: 'промондовошино',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('81f22ff6-d15a-4fa5-8542-e584ea3e464f'),
@@ -1369,7 +1367,7 @@ class BadWordsLibrary
                 text: 'триебучий',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('4200f683-0a85-41a6-bdff-0f5db2e88b7d'),
@@ -1377,7 +1375,7 @@ class BadWordsLibrary
                 text: 'проебенить',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('96aa8d0d-b91c-4d58-b8af-6013e1ba6323'),
@@ -1385,7 +1383,7 @@ class BadWordsLibrary
                 text: 'тухлогрудый',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('89de6afb-fd6a-45ea-8f60-8dd2bd17de9a'),
@@ -1393,7 +1391,7 @@ class BadWordsLibrary
                 text: 'бандерлога',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('dd3ffd6b-b708-459b-8bfb-c49784ada18a'),
@@ -1401,7 +1399,7 @@ class BadWordsLibrary
                 text: 'придурок',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('8f391d24-83fc-4e61-80a8-8ecf0768bc60'),
@@ -1409,7 +1407,7 @@ class BadWordsLibrary
                 text: 'отставать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('18191980-31a6-4772-9566-9ec286593bc8'),
@@ -1417,7 +1415,7 @@ class BadWordsLibrary
                 text: 'развитие',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('f1ba7fae-38d1-4015-a2b5-9556d3b56db3'),
@@ -1425,7 +1423,7 @@ class BadWordsLibrary
                 text: 'выебывать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a3938eb6-1712-473b-8f05-1a812cae7c97'),
@@ -1433,7 +1431,7 @@ class BadWordsLibrary
                 text: 'допиздиш',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('b3fa8a5c-2394-42a2-bf6f-489e0e1ef0dd'),
@@ -1441,7 +1439,7 @@ class BadWordsLibrary
                 text: 'алапездырь',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a66dc7e4-83ad-4a4e-893e-ccf79487e670'),
@@ -1449,7 +1447,7 @@ class BadWordsLibrary
                 text: 'пассивный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('9b7cec9e-35b1-480e-935f-52d731ef07b6'),
@@ -1457,7 +1455,7 @@ class BadWordsLibrary
                 text: 'педик',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('10467520-6d08-4e96-b73e-176d99ef9bc7'),
@@ -1465,7 +1463,7 @@ class BadWordsLibrary
                 text: 'лошин',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('327d3aca-82de-444d-ba9f-375be789f474'),
@@ -1473,7 +1471,7 @@ class BadWordsLibrary
                 text: 'ебаный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a353ee9e-6ad7-4da9-b34e-5b86b84304a2'),
@@ -1481,7 +1479,7 @@ class BadWordsLibrary
                 text: 'лупиздень',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('bae0f63a-5325-4847-a792-f3efdff64a41'),
@@ -1489,7 +1487,7 @@ class BadWordsLibrary
                 text: 'живоглотка',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('55fddcf5-f336-4763-8b92-eeda3fef7dd4'),
@@ -1497,7 +1495,7 @@ class BadWordsLibrary
                 text: 'обдолбать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('36e7fc28-10a3-450c-9c57-42717d17337b'),
@@ -1505,7 +1503,7 @@ class BadWordsLibrary
                 text: 'ниггер',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('8da6104f-67c4-40f3-af2f-bf90990a5d64'),
@@ -1513,7 +1511,7 @@ class BadWordsLibrary
                 text: 'облямандавевший',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('b1b35184-8101-4aa2-8707-6474f180e636'),
@@ -1521,7 +1519,7 @@ class BadWordsLibrary
                 text: 'пиздопроушина',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('cce793f2-44d4-4c80-81bb-5419ad86d466'),
@@ -1529,7 +1527,7 @@ class BadWordsLibrary
                 text: 'однохуйственно',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('d73308dd-23ef-451f-9a4d-0b349203ed9f'),
@@ -1537,7 +1535,7 @@ class BadWordsLibrary
                 text: 'здух',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('ac9a9fcb-be36-46f2-8b39-e58f56149794'),
@@ -1545,7 +1543,7 @@ class BadWordsLibrary
                 text: 'охуепиздрически',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('7db1b7d1-ca76-4dea-87e7-a8cef75a3f09'),
@@ -1553,7 +1551,7 @@ class BadWordsLibrary
                 text: 'насрать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('c1db2f5e-7e41-4f4f-bfae-46feebb4a4b2'),
@@ -1561,7 +1559,7 @@ class BadWordsLibrary
                 text: 'компот',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('3f3a6d8c-1df4-4bd4-8c83-5e4444b9dc3a'),
@@ -1569,7 +1567,7 @@ class BadWordsLibrary
                 text: 'пизда',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('45f9d04d-5873-43db-8347-42d559935c9a'),
@@ -1577,7 +1575,7 @@ class BadWordsLibrary
                 text: 'малолетний',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('8243e21e-6d96-44dd-bfa1-6d634fa3f4b1'),
@@ -1585,7 +1583,7 @@ class BadWordsLibrary
                 text: 'хуй',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('06869479-6571-48fb-b4e4-a267969206a6'),
@@ -1593,7 +1591,7 @@ class BadWordsLibrary
                 text: 'охуевать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('9b2c30ed-03f4-4987-a36c-80a232836f51'),
@@ -1601,7 +1599,7 @@ class BadWordsLibrary
                 text: 'яйцо',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('5d958c5d-404e-4b91-9611-f783d2aac1e1'),
@@ -1609,7 +1607,7 @@ class BadWordsLibrary
                 text: 'точно',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('a8cc0b26-ea6c-41bf-ab3d-c27562462115'),
@@ -1617,7 +1615,7 @@ class BadWordsLibrary
                 text: 'пизда',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('c5fcf422-b206-4d8b-ada0-1b5b4cafe259'),
@@ -1625,7 +1623,7 @@ class BadWordsLibrary
                 text: 'блябуда',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('ed86e705-3e22-4627-a432-3b9090a73ce4'),
@@ -1633,7 +1631,7 @@ class BadWordsLibrary
                 text: 'бляпиздец',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('ebda62b7-a052-443e-a326-a756294f1ba6'),
@@ -1641,7 +1639,7 @@ class BadWordsLibrary
                 text: 'хуеть',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('788acf08-cb1d-40cb-af39-c2668b625d45'),
@@ -1649,7 +1647,7 @@ class BadWordsLibrary
                 text: 'кочерышко',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('29924530-4b0b-4739-95c8-b540c4a2230c'),
@@ -1657,7 +1655,7 @@ class BadWordsLibrary
                 text: 'мышь',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('c8211834-369e-44b1-8087-e06f7a265ff0'),
@@ -1665,7 +1663,7 @@ class BadWordsLibrary
                 text: 'ясенхуй',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('8306e66f-18bd-4249-a67f-36331ca6790d'),
@@ -1673,7 +1671,7 @@ class BadWordsLibrary
                 text: 'жопа',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('bee8cc3d-91c5-43c3-a31d-1a49032d314a'),
@@ -1681,7 +1679,7 @@ class BadWordsLibrary
                 text: 'эрогенный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('f363cae1-4e2a-4371-9aee-b01936e4d133'),
@@ -1689,7 +1687,7 @@ class BadWordsLibrary
                 text: 'ебать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('421b1ad8-34c7-44cb-b002-2fcb2ae5fdb1'),
@@ -1697,7 +1695,7 @@ class BadWordsLibrary
                 text: 'ымля',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('f2057317-c16f-4a70-8210-7d96e2d0da15'),
@@ -1705,7 +1703,7 @@ class BadWordsLibrary
                 text: 'емль',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('649b55d6-5741-45e2-909c-bb4f7ca45bd5'),
@@ -1713,7 +1711,7 @@ class BadWordsLibrary
                 text: 'шантрепиздюция',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('32166af8-7fc3-4697-926e-c566e0c55420'),
@@ -1721,7 +1719,7 @@ class BadWordsLibrary
                 text: 'дырка',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('ef43f5b9-749d-4399-a8b7-75ac6f4c57d3'),
@@ -1729,7 +1727,7 @@ class BadWordsLibrary
                 text: 'четырехмудоблядыйпиздохуй',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('f4c5e1aa-7af9-4b8f-b5c9-c017c96f5dea'),
@@ -1737,7 +1735,7 @@ class BadWordsLibrary
                 text: 'членососательный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('36e23afe-7f17-42f0-9b22-ef3e9c3cc9bf'),
@@ -1745,7 +1743,7 @@ class BadWordsLibrary
                 text: 'чмопиздрокл',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('e0fd4cd6-b66a-4e95-8707-c7e0d36228dc'),
@@ -1753,7 +1751,7 @@ class BadWordsLibrary
                 text: 'педераст',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('2f7eaee8-eb8b-4446-9e65-45b708e48d3d'),
@@ -1761,7 +1759,7 @@ class BadWordsLibrary
                 text: 'ебнуть',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('e684ef4a-2798-4f09-a7a8-e95859c0755e'),
@@ -1769,7 +1767,7 @@ class BadWordsLibrary
                 text: 'придурок',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('c57c1e4f-77dc-411a-972f-5290d29d7f0d'),
@@ -1777,7 +1775,7 @@ class BadWordsLibrary
                 text: 'пиздануть',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('46cb0d71-eda2-4821-9728-adb184271743'),
@@ -1785,7 +1783,7 @@ class BadWordsLibrary
                 text: 'аграхуйный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('7df3d93c-0b9d-4295-bc0f-40f8aa983370'),
@@ -1793,7 +1791,7 @@ class BadWordsLibrary
                 text: 'мразь',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('e5c49ba6-1b11-40f7-b284-2a30f0bc040b'),
@@ -1801,7 +1799,7 @@ class BadWordsLibrary
                 text: 'затычка',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('d031a92c-0476-436c-8115-9c79d8b7dce5'),
@@ -1809,7 +1807,7 @@ class BadWordsLibrary
                 text: 'мама',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('0d6cb5ca-0858-455f-bfc5-a536c6717cbc'),
@@ -1817,7 +1815,7 @@ class BadWordsLibrary
                 text: 'ебучий',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('b005c5a1-826b-4c01-8a97-bbcf5185663b'),
@@ -1825,7 +1823,7 @@ class BadWordsLibrary
                 text: 'пурга',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('bacd7906-bdba-41ba-b45d-a4455d3a18f8'),
@@ -1833,7 +1831,7 @@ class BadWordsLibrary
                 text: 'образина',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('e812237f-504b-4c38-924e-ca7d5a91f951'),
@@ -1841,7 +1839,7 @@ class BadWordsLibrary
                 text: 'малолетка',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('37e8b738-d142-42dc-8044-2e48c6d56fe0'),
@@ -1849,7 +1847,7 @@ class BadWordsLibrary
                 text: 'узкоглазый',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('6af456b0-043f-475c-8b59-9313802abae7'),
@@ -1857,7 +1855,7 @@ class BadWordsLibrary
                 text: 'шлюха',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('2a1fe5e3-e0d7-4fbc-9593-232baa08410f'),
@@ -1865,7 +1863,7 @@ class BadWordsLibrary
                 text: 'неквалифицированный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('1e305a7b-36ec-4803-b71d-87c9c3f0925a'),
@@ -1873,7 +1871,7 @@ class BadWordsLibrary
                 text: 'минет',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('da52b051-8abe-4840-ba29-3d808438f5f8'),
@@ -1881,7 +1879,7 @@ class BadWordsLibrary
                 text: 'делать',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('3d8b1865-20ac-4137-9203-b94a67cf1174'),
@@ -1889,7 +1887,7 @@ class BadWordsLibrary
                 text: 'тварь',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('7791c3be-89d6-466a-88f6-bf3151863d2a'),
@@ -1897,7 +1895,7 @@ class BadWordsLibrary
                 text: 'предменструальный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('8cf4a3fb-daeb-4721-b288-d2f86cb5d9d8'),
@@ -1905,7 +1903,7 @@ class BadWordsLibrary
                 text: 'период',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('9a45c513-82ef-43ad-829b-4f31cc0b4120'),
@@ -1913,7 +1911,7 @@ class BadWordsLibrary
                 text: 'лобкотряска',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
             new BadWordLibraryRecord(
                 id: Uuid::fromString('96321e46-2470-4f1d-9fc8-1a0bb9de35b8'),
@@ -1921,7 +1919,7 @@ class BadWordsLibrary
                 text: 'вафельный',
                 telegramMessageId: null,
                 active: true,
-                addedAt: null,
+                updatedAt: null,
             ),
         ];
 
