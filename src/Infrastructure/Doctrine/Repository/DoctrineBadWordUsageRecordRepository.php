@@ -6,6 +6,7 @@ namespace Nikitades\ToxicAvenger\Infrastructure\Doctrine\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
 use Nikitades\ToxicAvenger\Domain\BadWordsLibrary;
 use Nikitades\ToxicAvenger\Domain\Entity\BadWordFrequencyRecord;
@@ -25,6 +26,51 @@ class DoctrineBadWordUsageRecordRepository extends ServiceEntityRepository imple
         private BadWordsLibrary $badWordsLibrary,
     ) {
         parent::__construct($registry, BadWordUsageRecord::class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findUsersWithBadWordUsageCount(int $chatId, int $limit): array
+    {
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('name', 'name');
+        $rsm->addScalarResult('usages_sum', 'usages_sum');
+        $rsm->addScalarResult('agg', 'agg');
+
+        $rows = $this->getEntityManager()->createNativeQuery(
+            'select u.name, SUM(bwur.usages_sum) usages_sum, json_agg(bwur) agg from bot_user u
+            inner join (
+                SELECT 
+                    bwur.user_id,
+                    COUNT(bwur.id) usages_sum,
+                    bwur.library_word_id word_id
+                FROM bad_word_usage_record bwur
+                WHERE bwur.telegram_chat_id = :tgChatId
+                GROUP BY bwur.library_word_id, bwur.user_id
+            ) bwur on bwur.user_id = u.id
+            group by u.name
+            order by usages_sum DESC
+            limit :limit',
+            $rsm,
+        )
+        ->setParameter('tgChatId', $chatId)
+        ->setParameter('limit', $limit)
+        ->getResult(Query::HYDRATE_ARRAY);
+
+        return array_map(
+            fn (array $row): array => [
+                'username' => $row['name'],
+                'usages' => array_map(
+                    fn (array $aggregate): array => [
+                        'wordId' => $aggregate['word_id'],
+                        'usagesCount' => $aggregate['usages_sum'],
+                    ],
+                    json_decode($row['agg'], true),
+                ),
+            ],
+            $rows,
+        );
     }
 
     /**

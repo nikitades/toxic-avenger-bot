@@ -33,4 +33,15 @@ interface BadWordUsageRecordRepositoryInterface
         int $userId,
         int $chatId,
     ): array;
+
+    /**
+     * @return array<array{
+     *  username: string,
+     *  usages: array<array{wordId: string, usagesCount: int}>
+     * }>
+     */
+    public function findUsersWithBadWordUsageCount(
+        int $chatId,
+        int $limit,
+    ): array;
 }
