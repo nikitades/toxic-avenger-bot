@@ -16,8 +16,8 @@ use Symfony\Component\Uid\Uuid;
 class BadWordLibraryRecord
 {
     public function __construct(
-        #[Id, Column(type: 'uuid', nullable: true)]
-        public ?Uuid $id,
+        #[Id, Column(type: 'uuid')]
+        public Uuid $id,
 
         #[Column(type: 'integer', nullable: true)]
         public ?int $telegramChatId,

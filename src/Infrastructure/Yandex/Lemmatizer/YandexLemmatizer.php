@@ -10,7 +10,7 @@ use Nikitades\ToxicAvenger\Infrastructure\Lemmatizer\LanguageBoundLemmatizerInte
 class YandexLemmatizer implements LanguageBoundLemmatizerInterface
 {
     public function __construct(
-        private LemmatizerProcess $lemmatizerFactory,
+        private LemmatizerProcess $lemmatizerProcess,
     ) {
     }
 
@@ -20,12 +20,41 @@ class YandexLemmatizer implements LanguageBoundLemmatizerInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function findObsceneLemmas(array $sourceWords): array
+    {
+        $output = [];
+        foreach ($sourceWords as $sourceWord) {
+            $onePhraseResults = $this->lemmatizerProcess->lemmatizePhraseWithWeight($sourceWord);
+
+            $successfulLemmatizations = array_filter(
+                $onePhraseResults,
+                fn (LemmatizingResult $result): bool => null !== $result->getFirstResultOrNull(),
+            );
+
+            $obsceneLemmas = array_filter(
+                $successfulLemmatizations,
+                fn (LemmatizingResult $result): bool => $result->getFirstResultOrNull()?->isObscene() ?? false,
+            );
+
+            if ([] === $obsceneLemmas) {
+                return [];
+            }
+
+            $output[] = $obsceneLemmas[0]->getFirstResultOrFallback();
+        }
+
+        return $output;
+    }
+
+    /**
      * @return array<string>
      * @throws LogicException
      */
     public function lemmatizePhraseWithOnlyMeaningful(string $phrase): array
     {
-        $allPhrases = $this->lemmatizerFactory->lemmatizePhraseWithWeight($phrase);
+        $allPhrases = $this->lemmatizerProcess->lemmatizePhraseWithWeight($phrase);
 
         $nonLemmatizablePhrases = array_filter(
             $allPhrases,
@@ -34,7 +63,7 @@ class YandexLemmatizer implements LanguageBoundLemmatizerInterface
 
         $lowercasedNonLemmatizablePhrases = array_map(
             fn (LemmatizingResult $result): LemmatizingResult => new LemmatizingResult([], mb_strtolower($result->getText())),
-            $nonLemmatizablePhrases
+            $nonLemmatizablePhrases,
         );
 
         $lemmatizablePhrases = array_filter(

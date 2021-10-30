@@ -30,6 +30,11 @@ class MultilingualLemmatizerTest extends TestCase
                     return $this->lemmatizerLang;
                 }
 
+                public function findObsceneLemmas(array $source): array
+                {
+                    return ['d', 'e', 'f'];
+                }
+
                 public function lemmatizePhraseWithOnlyMeaningful(string $phrase): array
                 {
                     return ['a', 'b', 'c'];

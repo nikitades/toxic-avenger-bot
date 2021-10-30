@@ -26,22 +26,26 @@ class SetWebhookCommand extends Command
             ->setName('bot:webhook:set')
             ->setDescription('Set webhook')
             ->addArgument(
-                'webhook',
+                'domain',
                 InputArgument::REQUIRED,
-                'Get it from @BotFather'
+                'Your bot\'s site with API',
             );
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+        $io = new SymfonyStyle($input, $output);
         try {
-            if (is_array($webhook = $input->getArgument('webhook'))) {
+            if (is_array($webhook = $input->getArgument('domain'))) {
                 $webhook = array_shift($webhook);
             }
             $webhook = (string) $webhook;
+            $webhook = sprintf('%s/api/webhook', $webhook);
             $this->telegram->setWebhook($webhook);
-            (new SymfonyStyle($input, $output))->info(sprintf('Webhook successfully set to: %s', $webhook));
+            $io->info(sprintf('Webhook successfully set to: %s', $webhook));
         } catch (Throwable $e) {
+            $io->error($e->getMessage());
+
             return Command::FAILURE;
         }
 

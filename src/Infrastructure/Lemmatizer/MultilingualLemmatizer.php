@@ -19,6 +19,20 @@ class MultilingualLemmatizer implements LemmatizerInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function findObsceneLemmas(array $sourceWords): array
+    {
+        $languages = iterator_to_array($this->languageDetector->detect(implode(', ', $sourceWords)));
+
+        if ([] === $languages) {
+            return [];
+        }
+
+        return $this->pickLemmatizer(array_keys($languages)[0])->findObsceneLemmas($sourceWords);
+    }
+
+    /**
      * TODO: handle multi-lingual phrases.
      *
      * {@inheritDoc}

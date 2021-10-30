@@ -10,9 +10,12 @@ use Symfony\Component\Uid\Uuid;
 
 class BadWordsLibrary
 {
+    private const OBSCENE_WORDS_ID_NAMESPACE = '7df363e4-b17d-44dc-b87c-9d2aba4f46d3';
+
     public function __construct(
         private BadWordLibraryRecordRepositoryInterface $badWordLibraryRecordRepository,
-        ) {
+        private LemmatizerInterface $lemmatizer,
+    ) {
     }
 
     /**
@@ -21,23 +24,45 @@ class BadWordsLibrary
      */
     public function getForChat(int $telegramChatId, array $lemmas): array
     {
-        $itemsFromDb = $this->badWordLibraryRecordRepository->findManyInChatFromList(
+        $foundFromDb = $this->badWordLibraryRecordRepository->findManyInChatFromList(
             chatId: $telegramChatId,
-            possibleBadWordLemmas: $lemmas
+            possibleBadWordLemmas: $lemmas,
         );
 
-        $summaryData = array_merge(
-                $itemsFromDb,
-                $this->getHardcodedData($telegramChatId, $lemmas),
-            );
+        $notFoundInDbLemmas = array_diff($lemmas, array_map(fn (BadWordLibraryRecord $bwlr): string => $bwlr->text, $foundFromDb));
+
+        $foundFromHardcodedLibrary = $this->findInHardcodedLibrary(
+            telegramChatId: $telegramChatId,
+            lemmas: $notFoundInDbLemmas,
+        );
+
+        $notFoundInHardcodedLibaryLemmas = array_diff($notFoundInDbLemmas, array_map(fn (BadWordLibraryRecord $bwlr): string => $bwlr->text, $foundFromHardcodedLibrary));
+
+        $foundFromObsceneAnalysis = array_map(
+            fn (string $obsceneLemma): BadWordLibraryRecord => new BadWordLibraryRecord(
+                id: Uuid::v5(Uuid::fromString(self::OBSCENE_WORDS_ID_NAMESPACE), $obsceneLemma),
+                telegramChatId: $telegramChatId,
+                telegramMessageId: null,
+                text: $obsceneLemma,
+                active: true,
+                updatedAt: null,
+            ),
+            $this->lemmatizer->findObsceneLemmas($notFoundInHardcodedLibaryLemmas),
+        );
+
+        $summaryData = [
+            ...$foundFromDb,
+            ...$foundFromHardcodedLibrary,
+            ...$foundFromObsceneAnalysis,
+        ];
 
         $uniqueData = array_combine(
-                array_map(
-                    fn (BadWordLibraryRecord $record): string => $record->text,
-                    $summaryData
-                ),
-                $summaryData
-            );
+            array_map(
+                fn (BadWordLibraryRecord $record): string => $record->text,
+                $summaryData,
+            ),
+            $summaryData,
+        );
 
         return array_values($uniqueData);
     }
@@ -46,7 +71,7 @@ class BadWordsLibrary
      * @param array<string> $lemmas
      * @return array<BadWordLibraryRecord>
      */
-    private function getHardcodedData(int $telegramChatId, array $lemmas): array
+    private function findInHardcodedLibrary(int $telegramChatId, array $lemmas): array
     {
         $sourceWords = [
             new BadWordLibraryRecord(
@@ -1921,6 +1946,14 @@ class BadWordsLibrary
                 active: true,
                 updatedAt: null,
             ),
+            new BadWordLibraryRecord(
+                id: Uuid::fromString('5bc43a50-229b-401f-bd0e-985f626076ba'),
+                telegramChatId: $telegramChatId,
+                text: 'пуджа',
+                telegramMessageId: null,
+                active: true,
+                updatedAt: null,
+            ),
         ];
 
         $hardcodedBadWordsMap = [];
@@ -1930,6 +1963,9 @@ class BadWordsLibrary
 
         $output = [];
         foreach ($lemmas as $lemma) {
+            if ('пуджом' === $lemma) {
+                $lemma = 'пуджа';
+            }
             $hardcodedBadWord = $hardcodedBadWordsMap[$lemma] ?? null;
             if (null == $hardcodedBadWord) {
                 continue;

@@ -23,10 +23,12 @@ class LemmatizingAnalysis
     private const SPRO = 'SPRO';
     private const V = 'V';
 
+    private const OBSCENE = 'обсц';
+
     public function __construct(
         private string $lex,
         private float $wt,
-        private string $gr
+        private string $gr,
     ) {
     }
 
@@ -77,6 +79,11 @@ class LemmatizingAnalysis
         }
 
         return explode('=', $grammarInfo[0])[0];
+    }
+
+    public function isObscene(): bool
+    {
+        return str_contains($this->gr, self::OBSCENE);
     }
 
     public static function checkIfMeaningful(self $that): bool

@@ -10,4 +10,10 @@ interface LemmatizerInterface
      * @return array<string> lemmas
      */
     public function lemmatizePhraseWithOnlyMeaningful(string $phrase): array;
+
+    /**
+     * @param array<string> $sourceWords
+     * @return array<string>
+     */
+    public function findObsceneLemmas(array $sourceWords): array;
 }

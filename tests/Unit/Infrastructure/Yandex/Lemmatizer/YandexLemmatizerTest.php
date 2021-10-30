@@ -20,7 +20,7 @@ class YandexLemmatizerTest extends TestCase
     public function testLemmatizePhraseWithOnlyMeaningful(): void
     {
         $lemmatizer = new YandexLemmatizer(
-            lemmatizerFactory: new LemmatizerProcess(
+            lemmatizerProcess: new LemmatizerProcess(
                 serializer: new Serializer(
                     normalizers: [
                         new ObjectNormalizer(null, null, null, new PropertyInfoExtractor(typeExtractors: [new PhpDocExtractor()])),

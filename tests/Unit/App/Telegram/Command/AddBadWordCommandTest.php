@@ -7,18 +7,17 @@ namespace Nikitades\ToxicAvenger\Tests\Unit\App\Telegram\Command;
 use DateTimeImmutable;
 use GuzzleHttp\Psr7\Response;
 use Longman\TelegramBot\Entities\Update;
-use Nikitades\ToxicAvenger\App\CommandDependencies;
 use Nikitades\ToxicAvenger\App\Telegram\Command\AddBadWordCommand;
 use Nikitades\ToxicAvenger\Domain\Command\AddBadWordsToLibrary\AddBadWordsToLibraryCommand;
 use Nikitades\ToxicAvenger\Domain\Entity\BadWordLibraryRecord;
 use Nikitades\ToxicAvenger\Domain\Repository\BadWordLibraryRecordRepositoryInterface;
-use Nikitades\ToxicAvenger\Tests\Unit\GenericTelegramCommandTest;
+use Nikitades\ToxicAvenger\Tests\Unit\AbstractTelegramCommandTest;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 use stdClass;
 
-class AddBadWordCommandTest extends GenericTelegramCommandTest
+class AddBadWordCommandTest extends AbstractTelegramCommandTest
 {
     /**
      * @dataProvider provideTestData
@@ -55,7 +54,7 @@ class AddBadWordCommandTest extends GenericTelegramCommandTest
             ->with($messageId)
             ->willReturn($badWordLibraryRecords);
 
-        $deps = new CommandDependencies(
+        $deps = $this->getDependencies(
             messageBusInterface: $messageBus,
             badWordLibraryRecordRepository: $badWordLibraryRecordRepository,
         );

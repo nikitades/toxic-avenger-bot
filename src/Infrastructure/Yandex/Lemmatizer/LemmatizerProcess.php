@@ -26,7 +26,7 @@ class LemmatizerProcess
         return __DIR__ . '/mystem_linux';
     }
 
-    public function getExecutable(): string
+    private function getExecutable(): string
     {
         return match (PHP_OS_FAMILY) {
             'Linux' => self::linux(),

@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace Nikitades\ToxicAvenger\Tests\Unit\App\Telegram\Command;
 
+use DateTimeImmutable;
 use GuzzleHttp\Psr7\Response;
 use Longman\TelegramBot\Entities\Update;
-use Nikitades\ToxicAvenger\App\CommandDependencies;
 use Nikitades\ToxicAvenger\App\Telegram\Command\RemoveBadWordCommand;
 use Nikitades\ToxicAvenger\Domain\Command\DisableBadWordsInLibrary\DisableBadWordsInLibraryCommand;
 use Nikitades\ToxicAvenger\Domain\Entity\BadWordLibraryRecord;
 use Nikitades\ToxicAvenger\Domain\Repository\BadWordLibraryRecordRepositoryInterface;
-use Nikitades\ToxicAvenger\Tests\Unit\GenericTelegramCommandTest;
-use DateTimeImmutable;
+use Nikitades\ToxicAvenger\Tests\Unit\AbstractTelegramCommandTest;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 use stdClass;
 
-class RemoveBadWordCommandTest extends GenericTelegramCommandTest
+class RemoveBadWordCommandTest extends AbstractTelegramCommandTest
 {
     /**
      * @dataProvider provideTestData
@@ -44,8 +43,8 @@ class RemoveBadWordCommandTest extends GenericTelegramCommandTest
                     telegramChatId: $chatId,
                     telegramMessageId: $messageId,
                     telegramUserId: $userId,
-                    updatedAt: (new DateTimeImmutable('now'))->setTimestamp($time)
-                )
+                    updatedAt: (new DateTimeImmutable('now'))->setTimestamp($time),
+                ),
             )
             ->willReturn(new Envelope(new stdClass()));
 
@@ -55,7 +54,7 @@ class RemoveBadWordCommandTest extends GenericTelegramCommandTest
             ->with($messageId)
             ->willReturn($badWordLibraryRecords);
 
-        $deps = new CommandDependencies(
+        $deps = $this->getDependencies(
             messageBusInterface: $messageBus,
             badWordLibraryRecordRepository: $badWordLibraryRecordRepository,
         );
@@ -78,7 +77,7 @@ class RemoveBadWordCommandTest extends GenericTelegramCommandTest
                 ],
                 bot_username: 'bot',
             ),
-            commandDependencies: $deps
+            commandDependencies: $deps,
         ))->execute();
 
         static::assertCount(1, $this->httpClientContainer->getHistory());
@@ -86,7 +85,7 @@ class RemoveBadWordCommandTest extends GenericTelegramCommandTest
         static::assertEquals('POST', $request->getMethod());
         static::assertEquals(
             $expectedString,
-            $request->getBody()->getContents()
+            $request->getBody()->getContents(),
         );
     }
 
@@ -118,7 +117,7 @@ class RemoveBadWordCommandTest extends GenericTelegramCommandTest
                     telegramMessageId: 1111,
                     text: 'Lorem',
                     active: true,
-                    updatedAt: (new DateTimeImmutable('now'))->setTimestamp(time())
+                    updatedAt: (new DateTimeImmutable('now'))->setTimestamp(time()),
                 ),
                 new BadWordLibraryRecord(
                     id: Uuid::fromString('49fce569-bde6-47e9-9181-122b2281d960'),
@@ -126,7 +125,7 @@ class RemoveBadWordCommandTest extends GenericTelegramCommandTest
                     telegramMessageId: 1111,
                     text: 'Ipsum',
                     active: true,
-                    updatedAt: (new DateTimeImmutable('now'))->setTimestamp(time())
+                    updatedAt: (new DateTimeImmutable('now'))->setTimestamp(time()),
                 ),
                 new BadWordLibraryRecord(
                     id: Uuid::fromString('88a600ff-441e-4d34-b2c6-681c8061e48a'),
@@ -134,7 +133,7 @@ class RemoveBadWordCommandTest extends GenericTelegramCommandTest
                     telegramMessageId: 1111,
                     text: 'Dolor',
                     active: false,
-                    updatedAt: (new DateTimeImmutable('now'))->setTimestamp(time())
+                    updatedAt: (new DateTimeImmutable('now'))->setTimestamp(time()),
                 ),
             ],
             'expectedString' => 'chat_id=2222&text=Removed%3A+%2ALorem%2A%2C+%2AIpsum%2A%2C+%2ADolor%2A&parse_mode=markdown',
