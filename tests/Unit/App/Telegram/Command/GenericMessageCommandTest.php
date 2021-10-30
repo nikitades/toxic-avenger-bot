@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nikitades\ToxicAvenger\Tests\Unit\App\Telegram\Command;
 
 use DateTimeImmutable;
-use GuzzleHttp\Psr7\Response;
 use Longman\TelegramBot\Entities\Update;
 use Nikitades\ToxicAvenger\App\Telegram\Command\GenericMessageCommand;
 use Nikitades\ToxicAvenger\Domain\BadWordsLibrary;
@@ -44,8 +43,6 @@ class GenericMessageCommandTest extends AbstractTelegramCommandTest
         array $toxicityMeasurement,
         string $expectedString,
     ): void {
-        $this->httpClientContainer->remember([new Response(status: 200, headers: [], body: '{}')]);
-
         $messageBus = $this->createMock(MessageBusInterface::class);
         $messageBus->expects(static::once())
             ->method('dispatch')
@@ -76,7 +73,7 @@ class GenericMessageCommandTest extends AbstractTelegramCommandTest
         $badWordUsageRecordRepository = $this->createMock(BadWordUsageRecordRepositoryInterface::class);
         $badWordUsageRecordRepository->expects(static::once())
             ->method('getBadWordsUsageFrequencyForList')
-            ->with($userId, $chatId, $badWordLibraryRecords)
+            ->with($userId, $chatId, array_filter($badWordLibraryRecords, fn (BadWordLibraryRecord $bwlr): bool => $bwlr->active))
             ->willReturn($frequencyData);
 
         $toxicityMeasurer = $this->createMock(ToxicityMeasurer::class);
@@ -159,7 +156,7 @@ class GenericMessageCommandTest extends AbstractTelegramCommandTest
             'messageId' => 1111,
             'chatId' => 2222,
             'userId' => 3333,
-            'text' => 'lala Lorem Ipsum lele',
+            'text' => 'lala Lorem Ipsum Dolor lele',
             'time' => time(),
             'badWordLibraryRecords' => [
                 new BadWordLibraryRecord(
@@ -178,8 +175,16 @@ class GenericMessageCommandTest extends AbstractTelegramCommandTest
                     active: true,
                     updatedAt: null,
                 ),
+                new BadWordLibraryRecord(
+                    id: Uuid::fromString('e71be6bc-abb3-469d-ae4e-f38c8c2c5e52'),
+                    telegramChatId: 2222,
+                    telegramMessageId: null,
+                    text: 'dolor',
+                    active: false,
+                    updatedAt: null,
+                ),
             ],
-            'lemmatizationResult' => ['lorem', 'ipsum'],
+            'lemmatizationResult' => ['lorem', 'ipsum', 'dolor'],
             'frequencyData' => [
                 new BadWordFrequencyRecord(
                     word: 'lorem',

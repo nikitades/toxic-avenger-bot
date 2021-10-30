@@ -68,12 +68,71 @@ class BadWordsLibrary
     }
 
     /**
+     * @param array<Uuid> $badWorldLibraryRecordIds
+     * @return array<BadWordLibraryRecord>
+     */
+    public function findManyById(array $badWorldLibraryRecordIds): array
+    {
+        $itemsFromDatabase = $this->badWordLibraryRecordRepository->findManyById($badWorldLibraryRecordIds);
+
+        $itemsFromDatabase = array_filter(
+            $itemsFromDatabase,
+            fn (BadWordLibraryRecord $bwlr): bool => $bwlr->active,
+        );
+
+        $hardcodedItems = array_filter(
+            $this->getHardcodedItems(),
+            fn (BadWordLibraryRecord $bwlr): bool => in_array(
+                (string) $bwlr->id,
+                array_map(
+                    fn (Uuid $badWorldLibraryRecordId): string => (string) $badWorldLibraryRecordId,
+                    $badWorldLibraryRecordIds,
+                ),
+                true,
+            ),
+        );
+
+        return array_merge(
+            $itemsFromDatabase,
+            $hardcodedItems,
+        );
+    }
+
+    /**
      * @param array<string> $lemmas
      * @return array<BadWordLibraryRecord>
      */
     private function findInHardcodedLibrary(int $telegramChatId, array $lemmas): array
     {
-        $sourceWords = [
+        $sourceWords = $this->getHardcodedItems($telegramChatId);
+
+        $hardcodedBadWordsMap = [];
+        foreach ($sourceWords as $sourceWord) {
+            $hardcodedBadWordsMap[$sourceWord->text] = $sourceWord;
+        }
+
+        $output = [];
+        foreach ($lemmas as $lemma) {
+            if ('пуджом' === $lemma) {
+                $lemma = 'пуджа';
+            }
+            $hardcodedBadWord = $hardcodedBadWordsMap[$lemma] ?? null;
+            if (null == $hardcodedBadWord) {
+                continue;
+            }
+
+            $output[] = $hardcodedBadWordsMap[$lemma];
+        }
+
+        return $output;
+    }
+
+    /**
+     * @return array<BadWordLibraryRecord>
+     */
+    private function getHardcodedItems(?int $telegramChatId = null): array
+    {
+        return [
             new BadWordLibraryRecord(
                 id: Uuid::fromString('6286c7fe-6bb1-4427-8b23-6e584b0729be'),
                 telegramChatId: $telegramChatId,
@@ -1955,25 +2014,5 @@ class BadWordsLibrary
                 updatedAt: null,
             ),
         ];
-
-        $hardcodedBadWordsMap = [];
-        foreach ($sourceWords as $sourceWord) {
-            $hardcodedBadWordsMap[$sourceWord->text] = $sourceWord;
-        }
-
-        $output = [];
-        foreach ($lemmas as $lemma) {
-            if ('пуджом' === $lemma) {
-                $lemma = 'пуджа';
-            }
-            $hardcodedBadWord = $hardcodedBadWordsMap[$lemma] ?? null;
-            if (null == $hardcodedBadWord) {
-                continue;
-            }
-
-            $output[] = $hardcodedBadWordsMap[$lemma];
-        }
-
-        return $output;
     }
 }

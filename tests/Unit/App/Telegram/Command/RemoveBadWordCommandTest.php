@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Nikitades\ToxicAvenger\Tests\Unit\App\Telegram\Command;
 
 use DateTimeImmutable;
-use GuzzleHttp\Psr7\Response;
 use Longman\TelegramBot\Entities\Update;
 use Nikitades\ToxicAvenger\App\Telegram\Command\RemoveBadWordCommand;
 use Nikitades\ToxicAvenger\Domain\Command\DisableBadWordsInLibrary\DisableBadWordsInLibraryCommand;
@@ -32,8 +31,6 @@ class RemoveBadWordCommandTest extends AbstractTelegramCommandTest
         array $badWordLibraryRecords,
         string $expectedString,
     ): void {
-        $this->httpClientContainer->remember([new Response(status: 200, headers: [], body: '{}')]);
-
         $messageBus = $this->createMock(MessageBusInterface::class);
         $messageBus->expects(static::once())
             ->method('dispatch')

@@ -30,10 +30,32 @@ class DoctrineBadWordUsageRecordRepository extends ServiceEntityRepository imple
     /**
      * {@inheritDoc}
      */
+    public function findBadWordIdsFromUser(int $userId, int $chatId): array
+    {
+        /** @var array<array{libraryWordId: string}> $rows */
+        $rows = $this->getEntityManager()->createQuery('SELECT bwur.libraryWordId libraryWordId
+            FROM ' . BadWordUsageRecord::class . ' bwur
+            INNER JOIN ' . User::class . ' u WITH bwur.user = u
+            WHERE bwur.telegramChatId = :tgChatId
+                AND u.telegramId = :tgUserId
+            GROUP BY bwur.libraryWordId
+        ')
+        ->setParameters([
+            'tgChatId' => $chatId,
+            'tgUserId' => $userId,
+        ])
+        ->getResult(Query::HYDRATE_ARRAY);
+
+        return array_column($rows, 'libraryWordId');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getBadWordsUsageFrequencyForList(int $userId, int $chatId, array $bwlr): array
     {
-        /** @var array<array{libraryWordId: Uuid, count: int}> */
-        $result = $this->getEntityManager()->createQuery('SELECT bwur.libraryWordId libraryWordId, COUNT(bwur.id) as count
+        /** @var array<array{libraryWordId: Uuid, count: int}> $rows */
+        $rows = $this->getEntityManager()->createQuery('SELECT bwur.libraryWordId libraryWordId, COUNT(bwur.id) as count
             FROM ' . BadWordUsageRecord::class . ' bwur
             INNER JOIN ' . User::class . ' u WITH bwur.user = u
             WHERE bwur.telegramChatId = :tgChatId
@@ -61,7 +83,7 @@ class DoctrineBadWordUsageRecordRepository extends ServiceEntityRepository imple
                 word: $libraryWordTextMap[(string) $rawData['libraryWordId']] ?? '',
                 usagesCount: $rawData['count'],
             ),
-            $result,
+            $rows,
         );
     }
 

@@ -23,11 +23,53 @@ class DoctrineBadWordLibraryRecordRepository extends ServiceEntityRepository imp
     /**
      * {@inheritDoc}
      */
+    public function findManyById(array $ids): array
+    {
+        return $this->createQueryBuilder('bwlr')
+            ->where('bwlr.id IN (:ids)')->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function ensureLiraryItemsExist(array $badWordLibraryRecords): void
+    {
+        $this->getEntityManager()->createQuery('INSERT INTO ' . BadWordLibraryRecord::class . ' bwlr
+            (id, telegramChatId, text, active)
+            VALUES
+            ' . implode(
+                ', ', array_map(
+                    fn (BadWordLibraryRecord $bwlr): string => "(:id_$bwlr->id, :telegramChatId_$bwlr->id, :text_$bwlr->id, :active_$bwlr->id)",
+                    $badWordLibraryRecords,
+                ),
+            ) . '
+            ON CONFLICT (id) DO NOTHING
+        ')
+        ->setParameters(
+            array_merge(
+                ...array_map(
+                    fn (BadWordLibraryRecord $bwlr): array => [
+                        'id_' . $bwlr->id => $bwlr->id,
+                        'telegramChatId_' . $bwlr->id => $bwlr->telegramChatId,
+                        'text_' . $bwlr->id => $bwlr->text,
+                        'active_' . $bwlr->id => true,
+                    ],
+                    $badWordLibraryRecords,
+                ),
+            ),
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function findActiveFromChat(int $chatId): array
     {
-        return $this->createQueryBuilder('bwl')
-            ->where('bwl.telegramChatId = :tgChatId')->setParameter('tgChatId', $chatId)
-            ->andWhere('bwl.active = :true')->setParameter('true', true)
+        return $this->createQueryBuilder('bwlr')
+            ->where('bwlr.telegramChatId = :tgChatId')->setParameter('tgChatId', $chatId)
+            ->andWhere('bwlr.active = :true')->setParameter('true', true)
             ->getQuery()
             ->getResult();
     }
@@ -41,13 +83,13 @@ class DoctrineBadWordLibraryRecordRepository extends ServiceEntityRepository imp
         int $telegramMessageId,
         DateTimeImmutable $updatedAt,
     ): void {
-        $this->createQueryBuilder('bwl')
+        $this->createQueryBuilder('bwlr')
             ->update()
-            ->set('bwl.active', ':true')->setParameter('true', true)
-            ->set('bwl.telegramMessageId', ':tgMsgId')->setParameter('tgMsgId', $telegramMessageId)
-            ->set('bwl.updatedAt', ':updatedAt')->setParameter('updatedAt', $updatedAt)
-            ->where('bwl.telegramChatId = :telegramChatId')->setParameter('telegramChatId', $telegramChatId)
-            ->andWhere('bwl.text IN(:lemmasToEnable)')->setParameter('lemmasToEnable', $lemmasToEnable)
+            ->set('bwlr.active', ':true')->setParameter('true', true)
+            ->set('bwlr.telegramMessageId', ':tgMsgId')->setParameter('tgMsgId', $telegramMessageId)
+            ->set('bwlr.updatedAt', ':updatedAt')->setParameter('updatedAt', $updatedAt)
+            ->where('bwlr.telegramChatId = :telegramChatId')->setParameter('telegramChatId', $telegramChatId)
+            ->andWhere('bwlr.text IN(:lemmasToEnable)')->setParameter('lemmasToEnable', $lemmasToEnable)
             ->getQuery()
             ->execute();
     }
@@ -58,13 +100,13 @@ class DoctrineBadWordLibraryRecordRepository extends ServiceEntityRepository imp
         int $telegramMessageId,
         DateTimeImmutable $updatedAt,
     ): void {
-        $this->createQueryBuilder('bwl')
+        $this->createQueryBuilder('bwlr')
             ->update()
-            ->set('bwl.active', ':false')->setParameter('false', false)
-            ->set('bwl.telegramMessageId', ':tgMsgId')->setParameter('tgMsgId', $telegramMessageId)
-            ->set('bwl.updatedAt', ':updatedAt')->setParameter('updatedAt', $updatedAt)
-            ->where('bwl.telegramChatId = :telegramChatId')->setParameter('telegramChatId', $telegramChatId)
-            ->andWhere('bwl.text IN(:lemmasToEnable)')->setParameter('lemmasToEnable', $lemmasToDisable)
+            ->set('bwlr.active', ':false')->setParameter('false', false)
+            ->set('bwlr.telegramMessageId', ':tgMsgId')->setParameter('tgMsgId', $telegramMessageId)
+            ->set('bwlr.updatedAt', ':updatedAt')->setParameter('updatedAt', $updatedAt)
+            ->where('bwlr.telegramChatId = :telegramChatId')->setParameter('telegramChatId', $telegramChatId)
+            ->andWhere('bwlr.text IN(:lemmasToEnable)')->setParameter('lemmasToEnable', $lemmasToDisable)
             ->getQuery()
             ->execute();
     }
@@ -86,9 +128,9 @@ class DoctrineBadWordLibraryRecordRepository extends ServiceEntityRepository imp
      */
     public function findAddedByMessageId(int $messageId): array
     {
-        return $this->createQueryBuilder('bwl')
-            ->where('bwl.telegramMessageId = :tgMsgId')->setParameter('tgMsgId', $messageId)
-            ->andWhere('bwl.active = true')
+        return $this->createQueryBuilder('bwlr')
+            ->where('bwlr.telegramMessageId = :tgMsgId')->setParameter('tgMsgId', $messageId)
+            ->andWhere('bwlr.active = true')
             ->getQuery()
             ->getResult();
     }
@@ -98,9 +140,9 @@ class DoctrineBadWordLibraryRecordRepository extends ServiceEntityRepository imp
      */
     public function findDisabledByMessageId(int $messageId): array
     {
-        return $this->createQueryBuilder('bwl')
-            ->where('bwl.telegramMessageId = :tgMsgId')->setParameter('tgMsgId', $messageId)
-            ->andWhere('bwl.active = false')
+        return $this->createQueryBuilder('bwlr')
+            ->where('bwlr.telegramMessageId = :tgMsgId')->setParameter('tgMsgId', $messageId)
+            ->andWhere('bwlr.active = false')
             ->getQuery()
             ->getResult();
     }
@@ -110,9 +152,9 @@ class DoctrineBadWordLibraryRecordRepository extends ServiceEntityRepository imp
      */
     public function findManyInChatFromList(int $chatId, array $possibleBadWordLemmas): array
     {
-        return $this->createQueryBuilder('bwl')
-            ->where('bwl.telegramChatId = :tgChatId')->setParameter('tgChatId', $chatId)
-            ->andWhere('bwl.text in (:words)')->setParameter('words', $possibleBadWordLemmas)
+        return $this->createQueryBuilder('bwlr')
+            ->where('bwlr.telegramChatId = :tgChatId')->setParameter('tgChatId', $chatId)
+            ->andWhere('bwlr.text in (:words)')->setParameter('words', $possibleBadWordLemmas)
             ->getQuery()
             ->getResult();
     }

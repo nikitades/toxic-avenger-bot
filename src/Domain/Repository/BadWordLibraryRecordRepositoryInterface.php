@@ -6,9 +6,16 @@ namespace Nikitades\ToxicAvenger\Domain\Repository;
 
 use DateTimeImmutable;
 use Nikitades\ToxicAvenger\Domain\Entity\BadWordLibraryRecord;
+use Symfony\Component\Uid\Uuid;
 
 interface BadWordLibraryRecordRepositoryInterface
 {
+    /**
+     * @param array<Uuid> $ids
+     * @return array<BadWordLibraryRecord>
+     */
+    public function findManyById(array $ids): array;
+
     /**
      * @return array<BadWordLibraryRecord>
      */
@@ -64,5 +71,12 @@ interface BadWordLibraryRecordRepositoryInterface
         int $telegramChatId,
         int $telegramMessageId,
         DateTimeImmutable $updatedAt,
+    ): void;
+
+    /**
+     * @param array<BadWordLibraryRecord> $badWordLibraryRecords
+     */
+    public function ensureLiraryItemsExist(
+        array $badWordLibraryRecords,
     ): void;
 }

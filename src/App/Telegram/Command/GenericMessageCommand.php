@@ -11,6 +11,7 @@ use Nikitades\ToxicAvenger\App\Telegram\BusAwareSystemCommand;
 use Nikitades\ToxicAvenger\Domain\Command\NewMessage\NewMessageCommand;
 use DateTimeImmutable;
 use Nikitades\ToxicAvenger\Domain\Entity\BadWordFrequencyRecord;
+use Nikitades\ToxicAvenger\Domain\Entity\BadWordLibraryRecord;
 use Nikitades\ToxicAvenger\Domain\ToxicityMeasure;
 
 class GenericMessageCommand extends BusAwareSystemCommand
@@ -35,6 +36,11 @@ class GenericMessageCommand extends BusAwareSystemCommand
         $badWordsFromLibrary = $this->commandDependencies->badWordsLibrary->getForChat(
             telegramChatId: $this->getMessage()->getChat()->getId(),
             lemmas: $lemmas,
+        );
+
+        $badWordsFromLibrary = array_filter(
+            $badWordsFromLibrary,
+            fn (BadWordLibraryRecord $bwlr): bool => $bwlr->active,
         );
 
         $usedBadWords = $this->commandDependencies->badWordUsageRecordRepository->getBadWordsUsageFrequencyForList(
