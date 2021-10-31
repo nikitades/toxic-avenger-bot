@@ -9,6 +9,7 @@ use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use Nikitades\ToxicAvenger\App\CommandDependencies;
 use Nikitades\ToxicAvenger\Domain\BadWordsLibrary;
+use Nikitades\ToxicAvenger\Domain\CoolQuotesProviderInterface;
 use Nikitades\ToxicAvenger\Domain\LemmatizerInterface;
 use Nikitades\ToxicAvenger\Domain\ObsceneWordEscaper;
 use Nikitades\ToxicAvenger\Domain\Repository\BadWordLibraryRecordRepositoryInterface;
@@ -41,6 +42,7 @@ abstract class AbstractTelegramCommandTest extends TestCase
         ?LemmatizerInterface $lemmatizer = null,
         ?ToxicityMeasurer $toxicityMeasurer = null,
         ?ObsceneWordEscaper $obsceneWordEscaper = null,
+        ?CoolQuotesProviderInterface $coolQuotesProvider = null,
     ): CommandDependencies {
         return new CommandDependencies(
             messageBusInterface: $messageBusInterface ?? $this->createMock(MessageBusInterface::class),
@@ -51,6 +53,7 @@ abstract class AbstractTelegramCommandTest extends TestCase
             lemmatizer: $lemmatizer ?? $this->createMock(LemmatizerInterface::class),
             toxicityMeasurer: $toxicityMeasurer ?? $this->createMock(ToxicityMeasurer::class),
             obsceneWordEscaper: $obsceneWordEscaper ?? $this->createMock(ObsceneWordEscaper::class),
+            coolQuotesProvider: $coolQuotesProvider ?? $this->createMock(CoolQuotesProviderInterface::class),
         );
     }
 }

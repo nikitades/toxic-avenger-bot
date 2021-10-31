@@ -57,5 +57,9 @@ services:
         bind:
             $typeExtractors: ["@php_doc_extractor", "@reflection_extractor"]
 
+    GuzzleHttp\ClientInterface:
+        class: GuzzleHttp\Client
+        public: true
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

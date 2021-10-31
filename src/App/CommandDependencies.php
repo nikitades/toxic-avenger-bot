@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nikitades\ToxicAvenger\App;
 
 use Nikitades\ToxicAvenger\Domain\BadWordsLibrary;
+use Nikitades\ToxicAvenger\Domain\CoolQuotesProviderInterface;
 use Nikitades\ToxicAvenger\Domain\LemmatizerInterface;
 use Nikitades\ToxicAvenger\Domain\ObsceneWordEscaper;
 use Nikitades\ToxicAvenger\Domain\Repository\BadWordLibraryRecordRepositoryInterface;
@@ -24,6 +25,7 @@ class CommandDependencies
         public LemmatizerInterface $lemmatizer,
         public ToxicityMeasurer $toxicityMeasurer,
         public ObsceneWordEscaper $obsceneWordEscaper,
+        public CoolQuotesProviderInterface $coolQuotesProvider,
     ) {
     }
 }

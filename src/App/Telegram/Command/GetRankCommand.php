@@ -12,6 +12,7 @@ class GetRankCommand extends BusAwareUserCommand
 {
     public function execute(): ServerResponse
     {
+        
         return Request::sendMessage([
             'chat_id' => $this->getMessage()->getChat()->getId(),
             'text' => 'Get rank',
