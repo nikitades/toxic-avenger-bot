@@ -46,6 +46,7 @@ class DoctrineBadWordUsageRecordRepository extends ServiceEntityRepository imple
                     COUNT(bwur.id) usages_sum,
                     bwur.library_word_id word_id
                 FROM bad_word_usage_record bwur
+                INNER JOIN bad_word_library_record bwlr ON bwlr.id = bwur.library_word_id AND bwlr.active = true
                 WHERE bwur.telegram_chat_id = :tgChatId
                 GROUP BY bwur.library_word_id, bwur.user_id
             ) bwur on bwur.user_id = u.id

@@ -29,13 +29,15 @@ class FindToxicCommand extends BusAwareUserCommand
         }
 
         $badWordsUsedInChat = $this->commandDependencies->badWordsLibrary->findManyById(
-            array_map(
-                fn (string $uuidStr): Uuid => Uuid::fromString($uuidStr),
-                array_unique(
-                    array_merge(
-                        ...array_map(
-                            fn (array $row): array => array_column($row['usages'], 'wordId'),
-                            $usersWithBiggestBadWordsUsageCount,
+            array_values(
+                array_map(
+                    fn (string $uuidStr): Uuid => Uuid::fromString($uuidStr),
+                    array_unique(
+                        array_merge(
+                            ...array_map(
+                                fn (array $row): array => array_column($row['usages'], 'wordId'),
+                                $usersWithBiggestBadWordsUsageCount,
+                            ),
                         ),
                     ),
                 ),
@@ -63,6 +65,8 @@ class FindToxicCommand extends BusAwareUserCommand
             ],
             $usersWithBiggestBadWordsUsageCount,
         );
+
+        //TODO: cover with tests
 
         return Request::sendMessage([
             'chat_id' => $this->getMessage()->getChat()->getId(),
