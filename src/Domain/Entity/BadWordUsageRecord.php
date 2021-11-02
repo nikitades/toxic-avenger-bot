@@ -23,10 +23,10 @@ class BadWordUsageRecord
         #[ManyToOne(targetEntity: User::class, inversedBy: 'badWords')]
         public User $user,
 
-        #[Column(type: 'integer')]
+        #[Column(type: 'text')]
         public int $telegramMessageId,
 
-        #[Column(type: 'integer')]
+        #[Column(type: 'text')]
         public int $telegramChatId,
 
         #[Column(type: 'uuid')]

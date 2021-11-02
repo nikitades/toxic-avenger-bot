@@ -23,7 +23,7 @@ class User
         #[Id, Column(type: 'uuid')]
         public Uuid $id,
 
-        #[Column(type: 'integer')]
+        #[Column(type: 'text')]
         public int $telegramId,
 
         #[Column(type: 'text')]

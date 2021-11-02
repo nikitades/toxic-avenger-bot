@@ -23,6 +23,7 @@ services:
             - "../src/App/Controller/"
             - "../src/Domain/Entity/"
             - "../src/Kernel.php"
+            - "../src/Infrastructure/Doctrine/Migration/"
 
     Nikitades\ToxicAvenger\App\Controller\:
         resource: "../src/App/Controller/"

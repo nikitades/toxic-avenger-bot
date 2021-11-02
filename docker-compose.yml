@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx.dockerfile
+    image: nikitades/toxicavenger-nginx
+    volumes:
+      - ./.tmp/nginx/log:/var/log/nginx
+    ports:
+      - "9000:80"
+    depends_on:
+      - web
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.dockerfile
+    image: nikitades/toxicavenger-app
+    depends_on:
+      - database
+  database:
+    image: postgres:13-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: toxicavenger
+      POSTGRES_PASSWORD: toxicavenger
+    volumes:
+      - ./docker/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+      - ./.tmp/database:/var/lib/postgresql/data
+    ports:
+      - 5433:5432

@@ -19,10 +19,10 @@ class BadWordLibraryRecord
         #[Id, Column(type: 'uuid')]
         public Uuid $id,
 
-        #[Column(type: 'integer', nullable: true)]
+        #[Column(type: 'text', nullable: true)]
         public ?int $telegramChatId,
 
-        #[Column(type: 'integer', nullable: true)]
+        #[Column(type: 'text', nullable: true)]
         public ?int $telegramMessageId,
 
         #[Column(type: 'text')]

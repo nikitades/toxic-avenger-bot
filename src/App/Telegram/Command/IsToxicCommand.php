@@ -16,6 +16,14 @@ class IsToxicCommand extends BusAwareUserCommand
         $username = explode(' ', $this->getMessage()->getText(true) ?? '')[0];
         $username = str_replace('@', '', $username);
 
+        if ('' === $username) {
+            return Request::sendMessage([
+                'chat_id' => $this->getMessage()->getChat()->getId(),
+                'text' => 'Please enter the user\'s nickname',
+                'parse_mode' => 'markdown',
+            ]);
+        }
+
         $user = $this->commandDependencies->userRepositoryInterface->findByUsername($username);
 
         if (null === $user) {

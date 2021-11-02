@@ -54,6 +54,7 @@ class YandexLemmatizer implements LanguageBoundLemmatizerInterface
      */
     public function lemmatizePhraseWithOnlyMeaningful(string $phrase): array
     {
+        $phrase = str_replace(["\n", "\t", "\r"], '', $phrase);
         $allPhrases = $this->lemmatizerProcess->lemmatizePhraseWithWeight($phrase);
 
         $nonLemmatizablePhrases = array_filter(
