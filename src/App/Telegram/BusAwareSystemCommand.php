@@ -6,17 +6,19 @@ namespace Nikitades\ToxicAvenger\App\Telegram;
 
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Entities\Update;
-use Longman\TelegramBot\Telegram;
+use Nikitades\ToxicAvenger\App\BusAwareTelegram;
 use Nikitades\ToxicAvenger\App\CommandDependencies;
 
 abstract class BusAwareSystemCommand extends SystemCommand
 {
+    protected CommandDependencies $commandDependencies;
+
     public function __construct(
-        Telegram $telegram,
+        BusAwareTelegram $telegram,
         ?Update $update = null,
-        protected CommandDependencies $commandDependencies,
     ) {
         $this->telegram = $telegram;
+        $this->commandDependencies = $telegram->getCommandDependencies();
         if ($update !== null) {
             $this->setUpdate($update);
         }

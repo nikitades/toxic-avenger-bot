@@ -1,3 +1,4 @@
 tests
 var
-.env.local.php
+.env.local*
+.env.*.local*

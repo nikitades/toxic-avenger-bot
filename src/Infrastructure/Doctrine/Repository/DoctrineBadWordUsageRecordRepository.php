@@ -38,6 +38,8 @@ class DoctrineBadWordUsageRecordRepository extends ServiceEntityRepository imple
         $rsm->addScalarResult('usages_sum', 'usages_sum');
         $rsm->addScalarResult('agg', 'agg');
 
+        $hardcodedBadWordsIds = $this->badWordsLibrary->getHardcodedItemsIds($chatId);
+
         $rows = $this->getEntityManager()->createNativeQuery(
             'select u.name, SUM(bwur.usages_sum) usages_sum, json_agg(bwur) agg from bot_user u
             inner join (
@@ -49,6 +51,14 @@ class DoctrineBadWordUsageRecordRepository extends ServiceEntityRepository imple
                 INNER JOIN bad_word_library_record bwlr ON bwlr.id = bwur.library_word_id AND bwlr.active = true
                 WHERE bwur.telegram_chat_id = :tgChatId
                 GROUP BY bwur.library_word_id, bwur.user_id
+                UNION ALL
+                SELECT 
+                    bwur.user_id,
+                    COUNT(bwur.id) usages_sum,
+                    bwur.library_word_id word_id
+                FROM bad_word_usage_record bwur
+                WHERE bwur.telegram_chat_id = :tgChatId AND bwur.library_word_id IN (:hardcodedWordsIds)
+                GROUP BY bwur.library_word_id, bwur.user_id
             ) bwur on bwur.user_id = u.id
             group by u.name
             order by usages_sum DESC
@@ -57,6 +67,7 @@ class DoctrineBadWordUsageRecordRepository extends ServiceEntityRepository imple
         )
         ->setParameter('tgChatId', $chatId)
         ->setParameter('limit', $limit)
+        ->setParameter('hardcodedWordsIds', $hardcodedBadWordsIds)
         ->getResult(Query::HYDRATE_ARRAY);
 
         return array_map(

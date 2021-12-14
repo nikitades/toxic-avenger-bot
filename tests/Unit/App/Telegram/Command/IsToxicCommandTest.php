@@ -60,7 +60,7 @@ class IsToxicCommandTest extends AbstractTelegramCommandTest
             ->method('findManyById')
             ->willReturn($usedBadWords);
 
-        $deps = $this->getDependencies(
+        $this->setCommandDependencies(
             userRepository: $userRepository,
             badWordUsageRecordRepository: $badWordUsageRepository,
             badWordsLibrary: $badWordsLibrary,
@@ -85,7 +85,6 @@ class IsToxicCommandTest extends AbstractTelegramCommandTest
                 ],
                 bot_username: 'bot',
             ),
-            commandDependencies: $deps,
         ))->execute();
 
         static::assertCount(1, $this->httpClientContainer->getHistory());

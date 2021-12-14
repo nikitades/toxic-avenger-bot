@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace Nikitades\ToxicAvenger\App\Telegram;
 
-use Longman\TelegramBot\Commands\UserCommand;
-use Longman\TelegramBot\Entities\Update;
-use Longman\TelegramBot\Telegram;
 use Nikitades\ToxicAvenger\App\CommandDependencies;
-use Symfony\Component\Messenger\MessageBusInterface;
+use Nikitades\ToxicAvenger\App\BusAwareTelegram;
+use Longman\TelegramBot\Entities\Update;
+use Longman\TelegramBot\Commands\UserCommand;
 
 abstract class BusAwareUserCommand extends UserCommand
 {
+    protected CommandDependencies $commandDependencies;
+
     public function __construct(
-        Telegram $telegram,
+        BusAwareTelegram $telegram,
         ?Update $update = null,
-        protected CommandDependencies $commandDependencies,
     ) {
         $this->telegram = $telegram;
+        $this->commandDependencies = $telegram->getCommandDependencies();
         if ($update !== null) {
             $this->setUpdate($update);
         }

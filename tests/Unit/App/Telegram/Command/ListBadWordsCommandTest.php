@@ -37,7 +37,7 @@ class ListBadWordsCommandTest extends AbstractTelegramCommandTest
             ->with($chatId)
             ->willReturn($badWordLibraryRecords);
 
-        $deps = $this->getDependencies(
+        $this->setCommandDependencies(
             messageBusInterface: $messageBus,
             badWordLibraryRecordRepository: $badWordLibraryRecordRepository,
         );
@@ -60,7 +60,6 @@ class ListBadWordsCommandTest extends AbstractTelegramCommandTest
                 ],
                 bot_username: 'bot',
             ),
-            commandDependencies: $deps,
         ))->execute();
 
         static::assertCount(1, $this->httpClientContainer->getHistory());

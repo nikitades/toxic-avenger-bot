@@ -68,17 +68,29 @@ class FindToxicCommand extends BusAwareUserCommand
 
         //TODO: cover with tests
 
+        array_walk(
+            array: $usersWithBiggestBadWordsUsageCount,
+            callback: fn (array &$userWithBadWordUsages) => usort(
+                array: $userWithBadWordUsages['usages'],
+                callback: fn (BadWordFrequencyRecord $a, BadWordFrequencyRecord $b): int => $b->usagesCount <=> $a->usagesCount,
+            )
+        );
+
         return Request::sendMessage([
             'chat_id' => $this->getMessage()->getChat()->getId(),
             'text' => "Most toxic users:\n" . implode(
-                ",\n",
+                ",\n\n",
                 array_map(
                     fn (array $userWithBadWordUsages): string => '@' . $userWithBadWordUsages['username'] . ' with ' . implode(
                         ', ',
                         array_map(
-                            fn (BadWordFrequencyRecord $bwfr): string => "$bwfr->word ($bwfr->usagesCount)",
+                            fn (BadWordFrequencyRecord $bwfr): string => $this->commandDependencies->obsceneWordEscaper->escape($bwfr->word) . " ($bwfr->usagesCount)",
                             $userWithBadWordUsages['usages'],
                         ),
+                    ) . ",\n***total***: " . array_reduce(
+                        array: $userWithBadWordUsages['usages'],
+                        callback: fn (int $carry, BadWordFrequencyRecord $item): int => $carry + $item->usagesCount,
+                        initial: 0
                     ),
                     $usersWithBiggestBadWordsUsageCount,
                 ),

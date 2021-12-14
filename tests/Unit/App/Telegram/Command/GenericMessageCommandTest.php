@@ -88,7 +88,7 @@ class GenericMessageCommandTest extends AbstractTelegramCommandTest
             ->withConsecutive(...array_map(fn (BadWordFrequencyRecord $bwfr): array => [$bwfr->word], $frequencyData))
             ->willReturnOnConsecutiveCalls(...array_map(fn (BadWordFrequencyRecord $bwfr): string => $bwfr->word, $frequencyData));
 
-        $deps = $this->getDependencies(
+        $this->setCommandDependencies(
             messageBusInterface: $messageBus,
             badWordsLibrary: $badWordsLibrary,
             badWordUsageRecordRepository: $badWordUsageRecordRepository,
@@ -116,7 +116,6 @@ class GenericMessageCommandTest extends AbstractTelegramCommandTest
                 ],
                 bot_username: 'bot',
             ),
-            commandDependencies: $deps,
         ))->execute();
 
         if ([] === $badWordLibraryRecords) {

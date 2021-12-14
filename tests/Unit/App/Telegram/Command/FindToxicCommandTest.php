@@ -46,7 +46,7 @@ class FindToxicCommandTest extends AbstractTelegramCommandTest
             ->with($uniqueBadWordIds)
             ->willReturn($badWordsUsed);
 
-        $deps = $this->getDependencies(
+        $this->setCommandDependencies(
             badWordUsageRecordRepository: $badWordUsageRecordRepository,
             badWordsLibrary: $badWordsLibrary,
         );
@@ -70,7 +70,6 @@ class FindToxicCommandTest extends AbstractTelegramCommandTest
                 ],
                 bot_username: 'bot',
             ),
-            commandDependencies: $deps,
         ))->execute();
 
         static::assertCount(1, $this->httpClientContainer->getHistory());
@@ -177,7 +176,7 @@ class FindToxicCommandTest extends AbstractTelegramCommandTest
                     updatedAt: new DateTimeImmutable('@' . time()),
                 ),
             ],
-            'expectedString' => 'chat_id=2222&text=Most+toxic+users%3A%0A%40nikitades+with+php+%2812%29%2C+is+%286%29%2C+hypertext+%283%29%2C%0A%40nikitades2+with+is+%2816%29%2C+preprocessor+%2811%29&parse_mode=markdown',
+            'expectedString' => 'chat_id=2222&text=Most+toxic+users%3A%0A%40nikitades+with++%2812%29%2C++%286%29%2C++%283%29%2C%0A%2A%2A%2Atotal%2A%2A%2A%3A+21%2C%0A%0A%40nikitades2+with++%2816%29%2C++%2811%29%2C%0A%2A%2A%2Atotal%2A%2A%2A%3A+27&parse_mode=markdown',
         ];
     }
 }

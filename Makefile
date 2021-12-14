@@ -16,10 +16,10 @@ composer:
 build_amd64: build_php build_nginx
 
 build_php:
-	docker buildx build -t nikitades/toxicavenger-app:latest -f docker/web.dockerfile --push .
+	docker buildx build -t nikitades/toxicavenger-app:latest -f docker/web.dockerfile --platform linux/amd64 --push .
 
 build_nginx:
-	docker buildx build -t nikitades/toxicavenger-nginx:latest -f docker/nginx.dockerfile --push .
+	docker buildx build -t nikitades/toxicavenger-nginx:latest -f docker/nginx.dockerfile --platform linux/amd64 --push .
 
 prune:
 	docker system prune -af

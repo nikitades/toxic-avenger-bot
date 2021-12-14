@@ -128,6 +128,17 @@ class BadWordsLibrary
     }
 
     /**
+     * @return array<Uuid>
+     */
+    public function getHardcodedItemsIds(?int $telegramChatId): array
+    {
+        return array_map(
+            fn (BadWordLibraryRecord $bwlr): Uuid => $bwlr->id,
+            $this->getHardcodedItems($telegramChatId),
+        );
+    }
+
+    /**
      * @return array<BadWordLibraryRecord>
      */
     private function getHardcodedItems(?int $telegramChatId = null): array
