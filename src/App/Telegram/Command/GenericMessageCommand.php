@@ -22,7 +22,7 @@ class GenericMessageCommand extends BusAwareSystemCommand
             new NewMessageCommand(
                 text: $this->getMessage()->getText() ?? '',
                 userId: $this->getMessage()->getFrom()->getId(),
-                userName: $this->getMessage()->getFrom()->getUsername(),
+                userName: $this->getMessage()->getFrom()->getUsername() ?? '<unknown>',
                 chatId: $this->getMessage()->getChat()->getId(),
                 messageId: $this->getMessage()->getMessageId(),
                 sentAt: new DateTimeImmutable(date(DateTimeInterface::ATOM, $this->getMessage()->getDate())),
